@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Link & DataTable</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2 class="text-center">Generate Link Undangan</h2>
+    
+    <!-- <div class="row">
+        <textarea>
+            
+        </textarea>
+    </div> -->
+
+    <form id="inputForm">
+        <div class="mb-3">
+            <label for="textareaInput" class="form-label">Masukkan Nama atau Teks (Setiap baris menghasilkan satu link)</label>
+            <textarea class="form-control" id="textareaInput" rows="5" placeholder="Masukkan nama atau teks per baris"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="templateInput" class="form-label">Template Pesan Undangan</label>
+            <textarea class="form-control" id="templateInput" rows="20" placeholder="Template Pesan Undangan">
+*Bayu & Putri*
+
+Yth. Bpk/Ibu/Sdr/i *{{NAMA}}*,
+
+Kami mengundang untuk hadir di acara pernikahan kami pada:
+
+Nama: *Bayu & Putri*
+Hari/Tgl: Kamis, 26 September 2024
+Pukul: 08.00 - Selesai
+Lokasi: Kp. mareleng 005/007 ds bojongsari, kec kedung waringin, kab bekasi
+
+Merupakan suatu kehormatan bagi kami apabila Bpk/Ibu/Sdr/i dapat menghadiri/ menyaksikan prosesi pernikahan kami pada tautan dibawah ini:
+
+{{LINK}}
+
+Atas perhatiannya kami ucapkan terimakasih.
+            </textarea>
+            <div class="my-3">
+                <span class="form-text">
+                    Berikut format dasar teks untuk WhatsApp: <br>
+    
+                    Teks tebal: Gunakan tanda bintang *teks* <br>
+                    Teks miring: Gunakan tanda underscore _teks_<br>
+                    Teks coret: Gunakan tanda tilde ~teks~<br>
+                    Teks monospasi: Gunakan tanda backtick `teks`<br>
+                    Mari kita modifikasi template undangan agar sesuai dengan format WhatsApp:
+                </span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <button type="button" id="generateLinks" class="btn btn-success">Generate Link</button>
+            </div>
+        </div>
+    </form>
+    
+    <hr>
+
+    <h4 class="text-center">Generated Links</h4>
+    <table id="linkTable" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Input</th>
+                <th>Generated Link</th>
+                <th>WhatsApp</th>
+                <th>Clipboard</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be inserted here -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    // Initialize DataTable
+    var table = $('#linkTable').DataTable();
+
+    // Generate link and add to DataTable
+    $('#generateLinks').on('click', function() {
+        table.clear().draw(); // Clear table before new data
+
+        var textareaVal = $('#textareaInput').val(); // Get the textarea value
+        var templateVal = $('#templateInput').val(); // Get the invitation template
+        var inputLines = textareaVal.split('\n');    // Split by newline
+
+        inputLines.forEach(function(line, index) {
+            if(line.trim()) {
+                var generatedLink = `https://bayudanputriwedding.vercel.app/?dear=${encodeURI(line)}`;
+
+                // Replace {{NAMA}} and {{LINK}} in the template
+                var message = templateVal.replace('{{NAMA}}', line.trim()).replace('{{LINK}}', generatedLink);
+                
+                // Generate WhatsApp URL
+                var whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+                
+
+                table.row.add([
+                    index + 1, 
+                    line, 
+                    `<a href="${generatedLink}" target="_blank">${generatedLink}</a>`,
+                    `<a href="${whatsappUrl}" target="_blank" class="btn btn-success">Share to WhatsApp</a>`,
+                    `<button class="btn btn-primary copyBtn" data-message="${encodeURIComponent(message)}">Copy to Clipboard</button>`
+                ]).draw();
+            }
+        });
+        $('.copyBtn').on('click', function() {
+            var message = decodeURIComponent($(this).data('message'));
+            navigator.clipboard.writeText(message).then(function() {
+                alert('Pesan berhasil disalin ke clipboard!');
+            }).catch(function(err) {
+                console.error('Error copying text: ', err);
+            });
+        });
+    });
+});
+</script>
+
+</body>
+</html>
