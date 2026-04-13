@@ -75,6 +75,15 @@ body {
     border-color: #d3e8e3;
 }
 
+.profile-preset-tools .form-select {
+    border-color: #d3e8e3;
+}
+
+.profile-preset-tools .btn {
+    border: 1px solid #d3e8e3;
+    font-size: 0.8rem;
+}
+
 .template-adjust-tools {
     display: flex;
     flex-wrap: wrap;
@@ -133,7 +142,8 @@ body {
 
     .table-action-buttons .btn,
     .wa-snippet-actions .btn,
-    .template-adjust-tools .btn {
+    .template-adjust-tools .btn,
+    .profile-preset-tools .btn {
         flex: 1 1 calc(50% - 6px);
     }
 

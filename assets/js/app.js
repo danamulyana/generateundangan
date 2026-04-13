@@ -1,16 +1,25 @@
 import {
     hasOnboardingAcknowledged,
+    loadSelectedCouplePresetSlot,
     loadSelectedTemplatePreset,
     loadTemplate,
     loadTemplateRows,
     saveOnboardingAcknowledged,
+    saveSelectedCouplePresetSlot,
     saveSelectedTemplatePreset,
     saveTemplate,
     saveTemplateRows
 } from './storage.js';
 import { parseNames, buildInvitationLink, buildFinalMessage, buildWhatsAppUrl } from './message.js';
 import { createLinkTable, renderInvitationRows } from './table.js';
-import { DEFAULT_BASE_INVITATION_URL, getDefaultAppState, normalizeBaseInvitationUrl } from './config.js';
+import {
+    DEFAULT_BASE_INVITATION_URL,
+    getDefaultAppState,
+    normalizeBaseInvitationUrl,
+    normalizeCoupleProfile,
+    normalizeCouplePresetLabels,
+    normalizeCouplePresets
+} from './config.js';
 import { getTemplateById, MESSAGE_TEMPLATES } from './templates.js';
 import { clearAppState, loadAppState, saveAppState } from './db.js';
 import {
@@ -31,6 +40,92 @@ $(document).ready(async function () {
 
     const table = createLinkTable($('#linkTable'));
     let appState = getDefaultAppState();
+
+    function getCoupleProfileFromInputs() {
+        return normalizeCoupleProfile({
+            brideName: $('#brideNameInput').val(),
+            groomName: $('#groomNameInput').val()
+        });
+    }
+
+    function applyCoupleProfileToInputs(coupleProfile) {
+        const safeProfile = normalizeCoupleProfile(coupleProfile);
+        $('#brideNameInput').val(safeProfile.brideName);
+        $('#groomNameInput').val(safeProfile.groomName);
+    }
+
+    function getSelectedCouplePresetSlot() {
+        return $('#couplePresetSlot').val();
+    }
+
+    function getDefaultSlotLabel(slotId) {
+        const map = {
+            'profil-a': 'Profil A',
+            'profil-b': 'Profil B',
+            'profil-c': 'Profil C'
+        };
+
+        return map[slotId] || slotId;
+    }
+
+    function updateCouplePresetSelectLabels() {
+        const select = $('#couplePresetSlot');
+
+        select.find('option').each(function () {
+            const slotId = $(this).val();
+            const baseLabel = getDefaultSlotLabel(slotId);
+            const customLabel = appState.couplePresetLabels?.[slotId];
+
+            $(this).text(customLabel ? `${baseLabel} - ${customLabel}` : baseLabel);
+        });
+    }
+
+    async function persistAndRenderInvitations(message) {
+        renderInvitationRows(table, appState.invitations);
+        $('#selectAllRows').prop('checked', false);
+        await persistAppStateWithWarning(message);
+    }
+
+    async function removeInvitationsByIds(ids) {
+        const idSet = new Set(ids);
+        const beforeCount = appState.invitations.length;
+
+        appState = {
+            ...appState,
+            invitations: appState.invitations.filter((item) => !idSet.has(item.id))
+        };
+
+        const deletedCount = beforeCount - appState.invitations.length;
+        if (deletedCount <= 0) {
+            return 0;
+        }
+
+        await persistAndRenderInvitations('Gagal memperbarui data setelah hapus baris.');
+        return deletedCount;
+    }
+
+    async function confirmDeleteRows(totalRows) {
+        const result = await Swal.fire({
+            title: 'Konfirmasi Hapus',
+            text: `Yakin ingin menghapus ${totalRows} baris terpilih?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, hapus',
+            cancelButtonText: 'Batal'
+        });
+
+        return result.isConfirmed;
+    }
+
+    async function persistAppStateWithWarning(message) {
+        try {
+            await saveAppState(appState);
+            return true;
+        } catch (error) {
+            Swal.fire('Peringatan', message, 'warning');
+            return false;
+        }
+    }
 
     async function showOnboardingModalIfNeeded() {
         if (hasOnboardingAcknowledged()) {
@@ -56,7 +151,7 @@ $(document).ready(async function () {
                         <li>Pastikan Anda berhak menghubungi penerima undangan.</li>
                         <li>Dilarang menggunakan tool untuk spam atau pesan merugikan.</li>
                         <li>RuangNada tidak bertanggung jawab atas kesalahan pengetikan nama, nomor WhatsApp yang tidak aktif, atau konten pesan yang dikirimkan oleh pengguna.</li>
-                        <li>Sistem ini tidak menyimpan data nama tamu Anda di server kami (Full Client-Side). Keamanan data sepenuhnya menjadi tanggung jawab pengguna saat melakukan ekspor/impor file backup.</li>
+                        <li>Sistem ini tidak menyimpan data nama tamu Anda di server kami. Keamanan data sepenuhnya menjadi tanggung jawab pengguna saat melakukan ekspor/impor file backup.</li>
                         <li>Tool ini disediakan "sebagaimana adanya". RuangNada berhak memperbarui fitur atau menghentikan layanan generator ini sewaktu-waktu untuk pemeliharaan sistem.</li>
                     </ul>
                 </div>
@@ -129,6 +224,20 @@ $(document).ready(async function () {
         Swal.fire('Peringatan', 'IndexedDB tidak bisa diakses. Data hanya tersimpan sementara sesi ini.', 'warning');
     }
 
+    appState = {
+        ...appState,
+        coupleProfile: normalizeCoupleProfile(appState.coupleProfile),
+        couplePresets: normalizeCouplePresets(appState.couplePresets),
+        couplePresetLabels: normalizeCouplePresetLabels(appState.couplePresetLabels)
+    };
+
+    updateCouplePresetSelectLabels();
+
+    const savedCouplePresetSlot = loadSelectedCouplePresetSlot();
+    if (savedCouplePresetSlot) {
+        $('#couplePresetSlot').val(savedCouplePresetSlot);
+    }
+
     const savedTemplate = loadTemplate();
     if (savedTemplate) {
         $('#templateInput').val(savedTemplate);
@@ -147,6 +256,7 @@ $(document).ready(async function () {
         $('#templateInput').attr('rows', initialRows);
     }
 
+    applyCoupleProfileToInputs(appState.coupleProfile);
     $('#baseUrlInput').val(normalizeBaseInvitationUrl(appState.baseInvitationUrl));
     renderInvitationRows(table, appState.invitations);
 
@@ -161,6 +271,115 @@ $(document).ready(async function () {
         const currentRows = Number(textarea.attr('rows')) || DEFAULT_TEMPLATE_ROWS;
         setTemplateRows(currentRows + delta);
     }
+
+    $('#couplePresetSlot').on('change', function () {
+        saveSelectedCouplePresetSlot(getSelectedCouplePresetSlot());
+    });
+
+    $('#saveCouplePreset').on('click', async function () {
+        const slotId = getSelectedCouplePresetSlot();
+        const coupleProfile = getCoupleProfileFromInputs();
+        const autoLabel = `${coupleProfile.brideName} & ${coupleProfile.groomName}`.trim();
+
+        appState = {
+            ...appState,
+            coupleProfile,
+            couplePresets: {
+                ...appState.couplePresets,
+                [slotId]: coupleProfile
+            },
+            couplePresetLabels: {
+                ...appState.couplePresetLabels,
+                [slotId]: autoLabel
+            }
+        };
+
+        const ok = await persistAppStateWithWarning('Preset profil pengantin gagal disimpan.');
+        if (ok) {
+            updateCouplePresetSelectLabels();
+            Swal.fire('Berhasil!', `Profil pengantin tersimpan di ${slotId.toUpperCase()}.`, 'success');
+        }
+    });
+
+    $('#renameCouplePreset').on('click', async function () {
+        const slotId = getSelectedCouplePresetSlot();
+        const currentLabel = appState.couplePresetLabels?.[slotId] || '';
+
+        const result = await Swal.fire({
+            title: `Rename ${getDefaultSlotLabel(slotId)}`,
+            input: 'text',
+            inputValue: currentLabel,
+            inputPlaceholder: 'Contoh: Client Budi & Siti',
+            confirmButtonText: 'Simpan Label',
+            showCancelButton: true,
+            cancelButtonText: 'Batal'
+        });
+
+        if (!result.isConfirmed) {
+            return;
+        }
+
+        const nextLabel = String(result.value || '').trim();
+        const nextLabels = { ...appState.couplePresetLabels };
+
+        if (nextLabel === '') {
+            delete nextLabels[slotId];
+        } else {
+            nextLabels[slotId] = nextLabel;
+        }
+
+        appState = {
+            ...appState,
+            couplePresetLabels: nextLabels
+        };
+
+        const ok = await persistAppStateWithWarning('Label profil gagal disimpan.');
+        if (ok) {
+            updateCouplePresetSelectLabels();
+            Swal.fire('Berhasil!', `Label ${getDefaultSlotLabel(slotId)} diperbarui.`, 'success');
+        }
+    });
+
+    $('#loadCouplePreset').on('click', function () {
+        const slotId = getSelectedCouplePresetSlot();
+        const preset = appState.couplePresets?.[slotId];
+
+        if (!preset) {
+            Swal.fire('Info', `Slot ${slotId.toUpperCase()} belum memiliki profil tersimpan.`, 'info');
+            return;
+        }
+
+        applyCoupleProfileToInputs(preset);
+        appState = {
+            ...appState,
+            coupleProfile: normalizeCoupleProfile(preset)
+        };
+        Swal.fire('Berhasil!', `Profil dari ${slotId.toUpperCase()} sudah dimuat.`, 'success');
+    });
+
+    $('#deleteCouplePreset').on('click', async function () {
+        const slotId = getSelectedCouplePresetSlot();
+        if (!appState.couplePresets?.[slotId]) {
+            Swal.fire('Info', `Slot ${slotId.toUpperCase()} sudah kosong.`, 'info');
+            return;
+        }
+
+        const updatedPresets = { ...appState.couplePresets };
+        const updatedLabels = { ...appState.couplePresetLabels };
+        delete updatedPresets[slotId];
+        delete updatedLabels[slotId];
+        appState = {
+            ...appState,
+            couplePresets: updatedPresets,
+            couplePresetLabels: updatedLabels
+        };
+
+        const ok = await persistAppStateWithWarning('Gagal menghapus preset profil pengantin.');
+        if (ok) {
+            updateCouplePresetSelectLabels();
+            Swal.fire('Berhasil!', `Preset ${slotId.toUpperCase()} berhasil dihapus.`, 'success');
+        }
+    });
 
     $('#templateSizeDown').on('click', function () {
         adjustTemplateRows(-TEMPLATE_ROW_STEP);
@@ -190,6 +409,7 @@ $(document).ready(async function () {
         const names = parseNames($('#textareaInput').val());
         const template = $('#templateInput').val();
         const baseInvitationUrl = normalizeBaseInvitationUrl($('#baseUrlInput').val());
+        const coupleProfile = getCoupleProfileFromInputs();
 
         if (names.length === 0) {
             Swal.fire('Oops!', 'Masukkan minimal satu nama tamu.', 'warning');
@@ -201,10 +421,11 @@ $(document).ready(async function () {
 
         const invitations = names.map((name) => {
             const invitationLink = buildInvitationLink(name, baseInvitationUrl);
-            const finalMessage = buildFinalMessage(template, name, invitationLink);
+            const finalMessage = buildFinalMessage(template, name, invitationLink, coupleProfile);
             const waUrl = buildWhatsAppUrl(finalMessage);
 
             return {
+                id: `inv-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
                 name,
                 invitationLink,
                 finalMessage,
@@ -214,17 +435,15 @@ $(document).ready(async function () {
         });
 
         appState = {
+            ...appState,
             invitations,
-            baseInvitationUrl
+            baseInvitationUrl,
+            coupleProfile
         };
 
         renderInvitationRows(table, appState.invitations);
 
-        try {
-            await saveAppState(appState);
-        } catch (error) {
-            Swal.fire('Peringatan', 'Data gagal disimpan ke IndexedDB.', 'warning');
-        }
+        await persistAppStateWithWarning('Data gagal disimpan ke IndexedDB.');
 
         Swal.fire('Berhasil!', `${names.length} Undangan siap dikirim.`, 'success');
     });
@@ -252,6 +471,15 @@ $(document).ready(async function () {
         syncPresetFromCurrentTemplate();
     });
 
+    $('#brideNameInput, #groomNameInput').on('input', async function () {
+        appState = {
+            ...appState,
+            coupleProfile: getCoupleProfileFromInputs()
+        };
+
+        await persistAppStateWithWarning('Nama pengantin gagal disimpan otomatis.');
+    });
+
     $(document).on('click', '.copyBtn', function () {
         const msg = decodeURIComponent($(this).data('msg'));
         navigator.clipboard.writeText(msg);
@@ -269,18 +497,73 @@ $(document).ready(async function () {
         }, 2000);
     });
 
+    $(document).on('click', '.deleteRowBtn', async function () {
+        const invitationId = String($(this).data('id') || '');
+        if (!invitationId) {
+            return;
+        }
+
+        const isConfirmed = await confirmDeleteRows(1);
+        if (!isConfirmed) {
+            return;
+        }
+
+        const deletedCount = await removeInvitationsByIds([invitationId]);
+        if (deletedCount > 0) {
+            Swal.fire('Berhasil!', '1 baris berhasil dihapus.', 'success');
+        }
+    });
+
+    $(document).on('change', '#selectAllRows', function () {
+        const checked = $(this).is(':checked');
+        $('.rowSelect').prop('checked', checked);
+    });
+
+    $(document).on('change', '.rowSelect', function () {
+        const total = $('.rowSelect').length;
+        const selected = $('.rowSelect:checked').length;
+        $('#selectAllRows').prop('checked', total > 0 && total === selected);
+    });
+
+    $('#deleteSelectedRows').on('click', async function () {
+        const selectedIds = $('.rowSelect:checked')
+            .map(function () {
+                return String($(this).data('id') || '');
+            })
+            .get()
+            .filter((id) => id !== '');
+
+        if (selectedIds.length === 0) {
+            Swal.fire('Info', 'Pilih minimal satu baris untuk dihapus.', 'info');
+            return;
+        }
+
+        const isConfirmed = await confirmDeleteRows(selectedIds.length);
+        if (!isConfirmed) {
+            return;
+        }
+
+        const deletedCount = await removeInvitationsByIds(selectedIds);
+        if (deletedCount > 0) {
+            Swal.fire('Berhasil!', `${deletedCount} baris berhasil dihapus.`, 'success');
+        }
+    });
+
     $('#clearTable').on('click', async function () {
         appState = {
+            ...appState,
             invitations: [],
-            baseInvitationUrl: normalizeBaseInvitationUrl($('#baseUrlInput').val() || DEFAULT_BASE_INVITATION_URL)
+            baseInvitationUrl: normalizeBaseInvitationUrl($('#baseUrlInput').val() || DEFAULT_BASE_INVITATION_URL),
+            coupleProfile: getCoupleProfileFromInputs()
         };
 
         try {
             await clearAppState();
-            await saveAppState(appState);
         } catch (error) {
             Swal.fire('Peringatan', 'Gagal membersihkan data IndexedDB.', 'warning');
         }
+
+        await persistAppStateWithWarning('Gagal membersihkan data IndexedDB.');
 
         table.clear().draw();
         $('#textareaInput').val('');
@@ -320,7 +603,10 @@ $(document).ready(async function () {
 
             const importedState = {
                 invitations: normalizeInvitations(payload.state.invitations),
-                baseInvitationUrl: normalizeBaseInvitationUrl(payload.state.baseInvitationUrl)
+                baseInvitationUrl: normalizeBaseInvitationUrl(payload.state.baseInvitationUrl),
+                coupleProfile: normalizeCoupleProfile(payload.state.coupleProfile),
+                couplePresets: normalizeCouplePresets(payload.state.couplePresets),
+                couplePresetLabels: normalizeCouplePresetLabels(payload.state.couplePresetLabels)
             };
 
             if (importedState.invitations.length === 0) {
@@ -353,8 +639,10 @@ $(document).ready(async function () {
             if (importMode === 'replace') {
                 appState = importedState;
                 $('#baseUrlInput').val(appState.baseInvitationUrl);
+                applyCoupleProfileToInputs(appState.coupleProfile);
+                updateCouplePresetSelectLabels();
                 renderInvitationRows(table, appState.invitations);
-                await saveAppState(appState);
+                await persistAppStateWithWarning('Data import gagal disimpan ke IndexedDB.');
 
                 Swal.fire('Berhasil!', `${appState.invitations.length} data berhasil diimport dengan mode replace.`, 'success');
                 return;
@@ -362,12 +650,14 @@ $(document).ready(async function () {
 
             const mergeResult = mergeInvitationLists(appState.invitations, importedState.invitations);
             appState = {
+                ...appState,
                 invitations: mergeResult.merged,
-                baseInvitationUrl: normalizeBaseInvitationUrl($('#baseUrlInput').val())
+                baseInvitationUrl: normalizeBaseInvitationUrl($('#baseUrlInput').val()),
+                coupleProfile: getCoupleProfileFromInputs()
             };
 
             renderInvitationRows(table, appState.invitations);
-            await saveAppState(appState);
+            await persistAppStateWithWarning('Data merge gagal disimpan ke IndexedDB.');
 
             Swal.fire(
                 'Merge Selesai!',

@@ -17,10 +17,15 @@ test('buildInvitationLink menambahkan encoded nama ke base URL', () => {
     assert.equal(result, 'https://contoh.com/?dear=Siti%20Aminah');
 });
 
-test('buildFinalMessage mengganti placeholder NAMA dan LINK', () => {
-    const template = 'Halo {{NAMA}}, link: {{LINK}}';
-    const result = buildFinalMessage(template, 'Budi', 'https://contoh.com');
-    assert.equal(result, 'Halo Budi, link: https://contoh.com');
+test('buildFinalMessage mengganti placeholder NAMA, LINK, dan PENGANTIN', () => {
+    const template = 'Halo {{NAMA}}, ini {{PENGANTIN}}. Link: {{LINK}}';
+    const result = buildFinalMessage(
+        template,
+        'Budi',
+        'https://contoh.com',
+        { brideName: 'Andri', groomName: 'Ranti' }
+    );
+    assert.equal(result, 'Halo Budi, ini Andri & Ranti. Link: https://contoh.com');
 });
 
 test('buildWhatsAppUrl menghasilkan URL API WhatsApp valid', () => {

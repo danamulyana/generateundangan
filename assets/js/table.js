@@ -10,11 +10,13 @@ export function createLinkTable($tableElement) {
 
 export function addGeneratedRow(table, index, invitation) {
     table.row.add([
+        `<div class="text-center"><input type="checkbox" class="rowSelect" data-id="${invitation.id}"></div>`,
         index + 1,
         `<strong>${invitation.name}</strong>`,
         `<div class="quick-actions">
             <a href="${invitation.waUrl}" target="_blank" class="btn btn-sm btn-success"><i class="bi bi-whatsapp me-1"></i>Kirim WA</a>
             <button class="btn btn-sm btn-outline-primary copyBtn" data-msg="${encodeURIComponent(invitation.finalMessage)}"><i class="bi bi-clipboard me-1"></i>Salin Teks</button>
+            <button class="btn btn-sm btn-outline-danger deleteRowBtn" data-id="${invitation.id}"><i class="bi bi-trash me-1"></i>Hapus</button>
         </div>`
     ]);
 }

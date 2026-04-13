@@ -94,7 +94,10 @@ function sanitizeInvitation(item) {
         return null;
     }
 
+    const id = String(item.id || '').trim() || `inv-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
     return {
+        id,
         name,
         invitationLink,
         finalMessage,

@@ -2,6 +2,7 @@ const TEMPLATE_KEY = 'rn_template';
 const TEMPLATE_ROWS_KEY = 'rn_template_rows';
 const TEMPLATE_PRESET_KEY = 'rn_template_preset';
 const ONBOARDING_ACK_KEY = 'rn_onboarding_ack_v1';
+const COUPLE_PRESET_SLOT_KEY = 'rn_couple_preset_slot';
 
 export function loadTemplate() {
     return localStorage.getItem(TEMPLATE_KEY);
@@ -39,4 +40,12 @@ export function hasOnboardingAcknowledged() {
 
 export function saveOnboardingAcknowledged() {
     localStorage.setItem(ONBOARDING_ACK_KEY, 'true');
+}
+
+export function loadSelectedCouplePresetSlot() {
+    return localStorage.getItem(COUPLE_PRESET_SLOT_KEY);
+}
+
+export function saveSelectedCouplePresetSlot(slotId) {
+    localStorage.setItem(COUPLE_PRESET_SLOT_KEY, slotId);
 }

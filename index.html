@@ -13,16 +13,59 @@
 <body>
 
 <div class="header-gradient text-center mb-5">
-    <h1 class="fw-bold"><i class="bi bi-music-note-beamed me-2"></i>RuangNada Generator</h1>
+    <h1 class="fw-bold">RuangNada Generator</h1>
     <p class="opacity-75">Harmonious Celebrations Manager</p>
 </div>
 
-<div class="container mb-5 px-3 px-md-2">
+<div class="container mb-5 px-1 px-md-2">
     <div class="row g-4">
         <div class="col-lg-4">
             <div class="card rn-card sticky-form p-4">
                 <h5 class="fw-bold mb-3"><i class="bi bi-sliders me-2"></i>Konfigurasi Pesan</h5>
                 <form id="inputForm">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold"><i class="bi bi-heart me-2"></i>Nama Pengantin</label>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <input type="text" class="form-control" id="brideNameInput" placeholder="Nama Pengantin 1">
+                            </div>
+                            <div class="col-6">
+                                <input type="text" class="form-control" id="groomNameInput" placeholder="Nama Pengantin 2">
+                            </div>
+                        </div>
+                        <small class="text-muted">Dipakai otomatis untuk placeholder <code>{{PENGANTIN}}</code>, <code>{{PENGANTIN_1}}</code>, dan <code>{{PENGANTIN_2}}</code>.</small>
+                    </div>
+
+                    <div class="mb-3 profile-preset-tools">
+                        <label class="form-label fw-semibold"><i class="bi bi-bookmark-heart me-2"></i>Preset Profil Pengantin</label>
+                        <div class="row g-2 align-items-end">
+                            <div class="col-12 col-md-5">
+                                <select class="form-select" id="couplePresetSlot">
+                                    <option value="profil-a">Profil A</option>
+                                    <option value="profil-b">Profil B</option>
+                                    <option value="profil-c">Profil C</option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-7">
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <button type="button" class="btn btn-sm btn-light" id="saveCouplePreset">
+                                        <i class="bi bi-save me-1"></i>Simpan Slot
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-light" id="renameCouplePreset">
+                                        <i class="bi bi-pencil-square me-1"></i>Rename Label
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-light" id="loadCouplePreset">
+                                        <i class="bi bi-arrow-down-circle me-1"></i>Muat Slot
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-light" id="deleteCouplePreset">
+                                        <i class="bi bi-x-circle me-1"></i>Hapus Slot
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <small class="text-muted">Gunakan slot untuk menyimpan profil pasangan berbeda agar cepat dipakai tim lain.</small>
+                    </div>
+
                     <div class="mb-3">
                         <label class="form-label fw-semibold"><i class="bi bi-people me-2"></i>Daftar Nama Tamu</label>
                         <textarea class="form-control" id="textareaInput" rows="6" placeholder="Budi Santoso&#10;Siti Aminah (Keluarga)"></textarea>
@@ -44,7 +87,7 @@
 Yth. *{{NAMA}}*,
 
 Kami mengundang Anda untuk hadir di momen bahagia kami:
-*Andri & Ranti*
+*{{PENGANTIN}}*
 
 Klik tautan di bawah untuk melihat detail acara dan RSVP:
 {{LINK}}
@@ -73,6 +116,8 @@ Terima kasih.
                             <span><code>`teks`</code> = Monospace</span>
                             <span><code>{{NAMA}}</code> = Nama tamu otomatis</span>
                             <span><code>{{LINK}}</code> = Link undangan otomatis</span>
+                            <span><code>{{PENGANTIN}}</code> = Nama pengantin gabungan</span>
+                            <span><code>{{PENGANTIN_1}}</code>/<code>{{PENGANTIN_2}}</code> = Nama masing-masing</span>
                         </div>
                         <div class="wa-snippet-actions mt-2">
                             <button type="button" class="btn btn-sm btn-light formatSnippetBtn" data-snippet="*teks penting*">
@@ -112,6 +157,7 @@ Terima kasih.
                 <div class="invitation-toolbar d-flex justify-content-between align-items-center mb-4 gap-2">
                     <h5 class="fw-bold m-0"><i class="bi bi-list-check me-2"></i>Daftar Undangan Tergenerate</h5>
                     <div class="table-action-buttons d-flex gap-2 flex-wrap justify-content-end">
+                        <button class="btn btn-outline-danger btn-sm" id="deleteSelectedRows"><i class="bi bi-trash me-1"></i>Hapus Terpilih</button>
                         <button class="btn btn-outline-secondary btn-sm" id="exportCsv"><i class="bi bi-file-earmark-spreadsheet me-1"></i>Export CSV</button>
                         <button class="btn btn-outline-primary btn-sm" id="exportJson"><i class="bi bi-download me-1"></i>Export Backup</button>
                         <button class="btn btn-outline-dark btn-sm" id="importJson"><i class="bi bi-upload me-1"></i>Import Backup</button>
@@ -124,6 +170,7 @@ Terima kasih.
                     <table id="linkTable" class="table table-hover w-100">
                         <thead>
                             <tr>
+                                <th class="text-center" style="width: 46px;"><input type="checkbox" id="selectAllRows"></th>
                                 <th>No</th>
                                 <th>Nama Tamu</th>
                                 <th>Aksi Cepat</th>

@@ -7,7 +7,7 @@ export const MESSAGE_TEMPLATES = [
 Yth. *{{NAMA}}*,
 
 Kami mengundang Anda untuk hadir di momen bahagia kami:
-*Andri & Ranti*
+*{{PENGANTIN}}*
 
 Klik tautan di bawah untuk melihat detail acara dan RSVP:
 {{LINK}}
@@ -21,6 +21,8 @@ Terima kasih.`
 
 Dengan penuh sukacita, kami mengundang Anda untuk hadir di hari bahagia kami.
 
+*{{PENGANTIN_1}} & {{PENGANTIN_2}}*
+
 Detail acara dapat dilihat di:
 {{LINK}}
 
@@ -32,6 +34,8 @@ Kehadiran Anda akan menjadi kebahagiaan besar bagi kami.`
         content: `Hai {{NAMA}}!
 
 Kami lagi bahagia banget dan pengen kamu ikut merayakan momen spesial kami.
+
+Pernikahan *{{PENGANTIN}}*
 
 Info lengkap acara ada di sini:
 {{LINK}}
@@ -46,6 +50,8 @@ Datang ya, ditunggu!`
 Kepada Yth. *{{NAMA}}* beserta keluarga,
 
 Kami mengundang untuk hadir pada acara pernikahan kami.
+
+*{{PENGANTIN}}*
 
 Informasi lengkap acara:
 {{LINK}}
