@@ -1,4 +1,4 @@
-import { loadTemplate, saveTemplate } from './storage.js';
+import { loadTemplate, loadTemplateRows, saveTemplate, saveTemplateRows } from './storage.js';
 import { parseNames, buildInvitationLink, buildFinalMessage, buildWhatsAppUrl } from './message.js';
 import { createLinkTable, renderInvitationRows } from './table.js';
 import { DEFAULT_BASE_INVITATION_URL, getDefaultAppState, normalizeBaseInvitationUrl } from './config.js';
@@ -32,15 +32,25 @@ $(document).ready(async function () {
         $('#templateInput').val(savedTemplate);
     }
 
+    const savedTemplateRows = loadTemplateRows();
+    if (savedTemplateRows) {
+        const initialRows = Math.max(MIN_TEMPLATE_ROWS, Math.min(MAX_TEMPLATE_ROWS, savedTemplateRows));
+        $('#templateInput').attr('rows', initialRows);
+    }
+
     $('#baseUrlInput').val(normalizeBaseInvitationUrl(appState.baseInvitationUrl));
     renderInvitationRows(table, appState.invitations);
+
+    function setTemplateRows(nextRows) {
+        const safeRows = Math.max(MIN_TEMPLATE_ROWS, Math.min(MAX_TEMPLATE_ROWS, nextRows));
+        $('#templateInput').attr('rows', safeRows);
+        saveTemplateRows(safeRows);
+    }
 
     function adjustTemplateRows(delta) {
         const textarea = $('#templateInput');
         const currentRows = Number(textarea.attr('rows')) || DEFAULT_TEMPLATE_ROWS;
-        const nextRows = Math.max(MIN_TEMPLATE_ROWS, Math.min(MAX_TEMPLATE_ROWS, currentRows + delta));
-
-        textarea.attr('rows', nextRows);
+        setTemplateRows(currentRows + delta);
     }
 
     $('#templateSizeDown').on('click', function () {
@@ -52,7 +62,7 @@ $(document).ready(async function () {
     });
 
     $('#templateSizeReset').on('click', function () {
-        $('#templateInput').attr('rows', DEFAULT_TEMPLATE_ROWS);
+        setTemplateRows(DEFAULT_TEMPLATE_ROWS);
     });
 
     $('#generateLinks').on('click', async function () {
