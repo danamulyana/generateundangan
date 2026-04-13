@@ -127,6 +127,78 @@ $(document).ready(async function () {
         }
     }
 
+    function getUsageTourSteps() {
+        return [
+            {
+                target: '#brideNameInput',
+                title: '1. Isi Nama Pengantin',
+                content: 'Masukkan nama pengantin agar template otomatis memakai placeholder {{PENGANTIN}}, {{PENGANTIN_1}}, dan {{PENGANTIN_2}}.'
+            },
+            {
+                target: '#couplePresetSlot',
+                title: '2. Simpan Profil Pengantin',
+                content: 'Pilih slot lalu klik Simpan Slot. Anda juga bisa Rename Label supaya mudah dibedakan antar client.'
+            },
+            {
+                target: '#textareaInput',
+                title: '3. Masukkan Daftar Tamu',
+                content: 'Tulis satu nama per baris. Data ini akan dipakai untuk generate link dan pesan WhatsApp.'
+            },
+            {
+                target: '#templatePreset',
+                title: '4. Pilih Template Pesan',
+                content: 'Pilih template siap pakai atau gunakan mode kustom sesuai kebutuhan acara.'
+            },
+            {
+                target: '#templateInput',
+                title: '5. Edit Template',
+                content: 'Sesuaikan isi pesan. Anda juga bisa pakai format cepat untuk bold, italic, coret, dan monospace.'
+            },
+            {
+                target: '#generateLinks',
+                title: '6. Generate Semua Link',
+                content: 'Klik untuk membuat link undangan, teks WhatsApp, dan mengisi tabel hasil generate.'
+            },
+            {
+                target: '#linkTable',
+                title: '7. Kelola Data Undangan',
+                content: 'Di tabel ini Anda bisa kirim WA, salin teks, hapus satu baris, atau hapus beberapa baris sekaligus.'
+            },
+            {
+                target: '#exportCsv',
+                title: '8. Backup dan Pindah Device',
+                content: 'Gunakan Export CSV/Backup dan Import Backup dengan mode Merge atau Replace.'
+            }
+        ];
+    }
+
+    function startUsageTour() {
+        const TourGuideClient = window.tourguide?.TourGuideClient;
+        if (!TourGuideClient) {
+            Swal.fire('Info', 'TourGuideJS belum tersedia. Coba refresh halaman.', 'info');
+            return;
+        }
+
+        const tour = new TourGuideClient({
+            steps: getUsageTourSteps(),
+            nextLabel: 'Lanjut',
+            prevLabel: 'Kembali',
+            finishLabel: 'Selesai',
+            dialogPlacement: 'bottom',
+            completeOnFinish: false,
+            showStepProgress: true,
+            showStepDots: true,
+            keyboardControls: true,
+            exitOnEscape: true,
+            dialogAnimate: true,
+            backdropAnimate: true,
+            targetPadding: 16,
+            autoScrollOffset: 24
+        });
+
+        tour.start();
+    }
+
     async function showOnboardingModalIfNeeded() {
         if (hasOnboardingAcknowledged()) {
             return;
@@ -424,6 +496,10 @@ $(document).ready(async function () {
 
     $('#templateSizeReset').on('click', function () {
         setTemplateRows(DEFAULT_TEMPLATE_ROWS);
+    });
+
+    $('#openUsageTour').on('click', function () {
+        startUsageTour();
     });
 
     $('#templatePreset').on('change', function () {

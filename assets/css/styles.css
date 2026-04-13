@@ -26,6 +26,13 @@ body {
     border-radius: 0 0 30px 30px;
 }
 
+.header-tour-btn {
+    margin-top: 8px;
+    border: none;
+    color: #0b4d42;
+    font-weight: 700;
+}
+
 .sticky-form {
     position: sticky;
     top: 20px;
