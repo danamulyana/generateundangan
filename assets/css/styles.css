@@ -33,6 +33,46 @@ body {
     font-weight: 700;
 }
 
+.tg-dialog.rn-tour-dialog {
+    border-radius: 14px;
+    border: 1px solid #d3e8e3;
+    box-shadow: 0 16px 36px rgba(7, 47, 41, 0.2);
+}
+
+.tg-dialog.rn-tour-dialog .tg-dialog-title {
+    color: #0b4d42;
+    font-weight: 700;
+}
+
+.tg-dialog.rn-tour-dialog .tg-dialog-body {
+    color: #2d3436;
+}
+
+.tg-dialog.rn-tour-dialog .tg-dialog-btn {
+    border-radius: 10px;
+    font-weight: 700;
+    border: 1px solid #d3e8e3;
+}
+
+.tg-dialog.rn-tour-dialog #tg-dialog-next-btn {
+    background: #0b4d42;
+    border-color: #0b4d42;
+    color: #fff;
+}
+
+.tg-dialog.rn-tour-dialog #tg-dialog-prev-btn {
+    color: #0b4d42;
+    background: #fff;
+}
+
+.tg-dialog.rn-tour-dialog .tg-dot.tg-dot-active {
+    background: #1a7a6b;
+}
+
+.tg-backdrop.rn-tour-backdrop {
+    backdrop-filter: blur(1.2px);
+}
+
 .sticky-form {
     position: sticky;
     top: 20px;
