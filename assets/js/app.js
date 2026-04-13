@@ -136,8 +136,8 @@ $(document).ready(async function () {
             title: 'Selamat Datang di RuangNada Invitation Generator',
             html: `
                 <div style="text-align:left; font-size:0.95rem; line-height:1.5;">
-                    <p><strong>Fitur yang tersedia:</strong></p>
-                    <ul>
+                    <p class="mb-2"><strong>Fitur yang tersedia:</strong></p>
+                    <ul class="mb-3">
                         <li>Generate link undangan WhatsApp otomatis dari daftar nama.</li>
                         <li>Pilihan template pesan siap pakai + mode kustom.</li>
                         <li>Format cepat WhatsApp (bold, italic, coret, monospace).</li>
@@ -145,15 +145,23 @@ $(document).ready(async function () {
                         <li>Export CSV, Export Backup, dan Import Backup lintas device.</li>
                         <li>Import mode Merge/Replace dengan deteksi duplikat.</li>
                     </ul>
-                    <p class="mb-1"><strong>T&amp;C:</strong></p>
-                    <ul>
-                        <li>pastikan undangan anda dari ruangnada invitation</li>
-                        <li>Pastikan Anda berhak menghubungi penerima undangan.</li>
-                        <li>Dilarang menggunakan tool untuk spam atau pesan merugikan.</li>
-                        <li>RuangNada tidak bertanggung jawab atas kesalahan pengetikan nama, nomor WhatsApp yang tidak aktif, atau konten pesan yang dikirimkan oleh pengguna.</li>
-                        <li>Sistem ini tidak menyimpan data nama tamu Anda di server kami. Keamanan data sepenuhnya menjadi tanggung jawab pengguna saat melakukan ekspor/impor file backup.</li>
-                        <li>Tool ini disediakan "sebagaimana adanya". RuangNada berhak memperbarui fitur atau menghentikan layanan generator ini sewaktu-waktu untuk pemeliharaan sistem.</li>
-                    </ul>
+                    <div style="border:1px solid #d3e8e3; border-radius:12px; padding:12px; background:#f1f7f6;">
+                        <p class="mb-2"><strong>T&amp;C:</strong></p>
+                        <div id="onboardingTermsBox" style="max-height:220px; overflow:auto; padding-right:6px; text-align:left;">
+                            <ul class="mb-0">
+                                <li>Pastikan undangan yang dibuat memang digunakan untuk acara Anda dan untuk penerima yang berhak dihubungi.</li>
+                                <li>Dilarang menggunakan tool ini untuk spam, penipuan, penyamaran identitas, atau aktivitas yang melanggar hukum.</li>
+                                <li>Nama pengantin, template pesan, dan profil preset yang disimpan di browser hanya tersimpan lokal pada perangkat Anda melalui browser storage dan IndexedDB.</li>
+                                <li>Jika Anda memakai fitur export/import, pastikan file backup disimpan aman karena isinya dapat memuat daftar tamu, pesan, base URL, dan profil pengantin.</li>
+                                <li>Fitur merge saat import akan menambahkan data baru dan melewati duplikat, tetapi tetap menjadi tanggung jawab pengguna untuk memeriksa hasil akhirnya.</li>
+                                <li>Fitur hapus row, hapus terpilih, reset data, atau replace import akan mengubah data yang tersimpan di browser. Pastikan Anda sudah melakukan backup jika diperlukan.</li>
+                                <li>Tool ini disediakan "sebagaimana adanya". RuangNada tidak menjamin pengiriman pesan berhasil jika nomor WhatsApp tujuan tidak aktif, format pesan salah, atau layanan pihak ketiga mengalami gangguan.</li>
+                                <li>RuangNada dapat menambah, mengubah, atau menghentikan fitur kapan saja untuk pemeliharaan, peningkatan kualitas, atau alasan operasional lainnya.</li>
+                                <li>Pengguna bertanggung jawab penuh atas isi pesan yang dibuat, data yang dimasukkan, dan penggunaan hasil generator sesuai hukum yang berlaku.</li>
+                            </ul>
+                        </div>
+                        <small id="onboardingTermsHint" class="d-block mt-2 text-muted">Scroll sampai bawah untuk mengaktifkan centang persetujuan.</small>
+                    </div>
                 </div>
             `,
             input: 'checkbox',
@@ -162,6 +170,31 @@ $(document).ready(async function () {
             confirmButtonText: 'Mulai Gunakan',
             allowOutsideClick: false,
             allowEscapeKey: false,
+            didOpen: () => {
+                const popup = Swal.getPopup();
+                const checkbox = popup?.querySelector('.swal2-checkbox input');
+                const termsBox = popup?.querySelector('#onboardingTermsBox');
+                const termsHint = popup?.querySelector('#onboardingTermsHint');
+
+                if (!checkbox || !termsBox) {
+                    return;
+                }
+
+                checkbox.disabled = true;
+
+                const unlockCheckboxIfRead = () => {
+                    const isAtBottom = termsBox.scrollTop + termsBox.clientHeight >= termsBox.scrollHeight - 4;
+                    if (isAtBottom) {
+                        checkbox.disabled = false;
+                        if (termsHint) {
+                            termsHint.textContent = 'Persetujuan sudah aktif. Silakan centang untuk melanjutkan.';
+                        }
+                    }
+                };
+
+                termsBox.addEventListener('scroll', unlockCheckboxIfRead);
+                unlockCheckboxIfRead();
+            },
             inputValidator: (checked) => {
                 if (!checked) {
                     return 'Centang persetujuan T&C untuk melanjutkan.';
