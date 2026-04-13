@@ -17,7 +17,7 @@
     <p class="opacity-75">Harmonious Celebrations Manager</p>
 </div>
 
-<div class="container mb-5">
+<div class="container mb-5 px-3 px-md-2">
     <div class="row g-4">
         <div class="col-lg-4">
             <div class="card rn-card sticky-form p-4">
@@ -44,6 +44,18 @@ Klik tautan di bawah untuk melihat detail acara dan RSVP:
 
 Terima kasih.
                         </textarea>
+                        <div class="template-adjust-tools mt-2">
+                            <button type="button" class="btn btn-sm btn-light" id="templateSizeDown">
+                                <i class="bi bi-dash-lg me-1"></i>Lebih Ringkas
+                            </button>
+                            <button type="button" class="btn btn-sm btn-light" id="templateSizeReset">
+                                <i class="bi bi-arrow-counterclockwise me-1"></i>Reset Tinggi
+                            </button>
+                            <button type="button" class="btn btn-sm btn-light" id="templateSizeUp">
+                                <i class="bi bi-plus-lg me-1"></i>Lebih Luas
+                            </button>
+                        </div>
+                        <small class="text-muted d-block mt-1">Area template bisa di-drag dari pojok kanan bawah atau pakai tombol di atas.</small>
                     </div>
                     <div class="wa-format-guide mb-3">
                         <p class="wa-format-title mb-2"><i class="bi bi-info-circle me-2"></i>Format Pesan WhatsApp</p>
@@ -54,6 +66,20 @@ Terima kasih.
                             <span><code>`teks`</code> = Monospace</span>
                             <span><code>{{NAMA}}</code> = Nama tamu otomatis</span>
                             <span><code>{{LINK}}</code> = Link undangan otomatis</span>
+                        </div>
+                        <div class="wa-snippet-actions mt-2">
+                            <button type="button" class="btn btn-sm btn-light formatSnippetBtn" data-snippet="*teks penting*">
+                                <i class="bi bi-type-bold me-1"></i>Tambah Bold
+                            </button>
+                            <button type="button" class="btn btn-sm btn-light formatSnippetBtn" data-snippet="_teks miring_">
+                                <i class="bi bi-type-italic me-1"></i>Tambah Italic
+                            </button>
+                            <button type="button" class="btn btn-sm btn-light formatSnippetBtn" data-snippet="~teks dicoret~">
+                                <i class="bi bi-type-strikethrough me-1"></i>Tambah Coret
+                            </button>
+                            <button type="button" class="btn btn-sm btn-light formatSnippetBtn" data-snippet="`teks monospace`">
+                                <i class="bi bi-code-slash me-1"></i>Tambah Monospace
+                            </button>
                         </div>
                         <small class="text-muted d-block mt-2">Gunakan baris kosong untuk memberi jarak antar paragraf.</small>
                     </div>
@@ -76,9 +102,9 @@ Terima kasih.
 
         <div class="col-lg-8">
             <div class="card rn-card p-4">
-                <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="invitation-toolbar d-flex justify-content-between align-items-center mb-4 gap-2">
                     <h5 class="fw-bold m-0"><i class="bi bi-list-check me-2"></i>Daftar Undangan Tergenerate</h5>
-                    <div class="d-flex gap-2 flex-wrap justify-content-end">
+                    <div class="table-action-buttons d-flex gap-2 flex-wrap justify-content-end">
                         <button class="btn btn-outline-secondary btn-sm" id="exportCsv"><i class="bi bi-file-earmark-spreadsheet me-1"></i>Export CSV</button>
                         <button class="btn btn-outline-primary btn-sm" id="exportJson"><i class="bi bi-download me-1"></i>Export Backup</button>
                         <button class="btn btn-outline-dark btn-sm" id="importJson"><i class="bi bi-upload me-1"></i>Import Backup</button>

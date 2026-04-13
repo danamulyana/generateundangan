@@ -13,6 +13,11 @@ import {
 } from './transfer.js';
 
 $(document).ready(async function () {
+    const DEFAULT_TEMPLATE_ROWS = 8;
+    const MIN_TEMPLATE_ROWS = 6;
+    const MAX_TEMPLATE_ROWS = 30;
+    const TEMPLATE_ROW_STEP = 2;
+
     const table = createLinkTable($('#linkTable'));
     let appState = getDefaultAppState();
 
@@ -29,6 +34,26 @@ $(document).ready(async function () {
 
     $('#baseUrlInput').val(normalizeBaseInvitationUrl(appState.baseInvitationUrl));
     renderInvitationRows(table, appState.invitations);
+
+    function adjustTemplateRows(delta) {
+        const textarea = $('#templateInput');
+        const currentRows = Number(textarea.attr('rows')) || DEFAULT_TEMPLATE_ROWS;
+        const nextRows = Math.max(MIN_TEMPLATE_ROWS, Math.min(MAX_TEMPLATE_ROWS, currentRows + delta));
+
+        textarea.attr('rows', nextRows);
+    }
+
+    $('#templateSizeDown').on('click', function () {
+        adjustTemplateRows(-TEMPLATE_ROW_STEP);
+    });
+
+    $('#templateSizeUp').on('click', function () {
+        adjustTemplateRows(TEMPLATE_ROW_STEP);
+    });
+
+    $('#templateSizeReset').on('click', function () {
+        $('#templateInput').attr('rows', DEFAULT_TEMPLATE_ROWS);
+    });
 
     $('#generateLinks').on('click', async function () {
         const names = parseNames($('#textareaInput').val());
@@ -71,6 +96,22 @@ $(document).ready(async function () {
         }
 
         Swal.fire('Berhasil!', `${names.length} Undangan siap dikirim.`, 'success');
+    });
+
+    $('.formatSnippetBtn').on('click', function () {
+        const snippet = $(this).data('snippet');
+        const textarea = $('#templateInput').get(0);
+        const currentValue = textarea.value;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+
+        const insertion = start > 0 && !currentValue.endsWith('\n') ? `\n${snippet}` : snippet;
+        const nextValue = currentValue.slice(0, start) + insertion + currentValue.slice(end);
+
+        textarea.value = nextValue;
+        const cursorPosition = start + insertion.length;
+        textarea.focus();
+        textarea.setSelectionRange(cursorPosition, cursorPosition);
     });
 
     $(document).on('click', '.copyBtn', function () {

@@ -12,7 +12,7 @@ export function addGeneratedRow(table, index, invitation) {
     table.row.add([
         index + 1,
         `<strong>${invitation.name}</strong>`,
-        `<div class="btn-group shadow-sm">
+        `<div class="quick-actions">
             <a href="${invitation.waUrl}" target="_blank" class="btn btn-sm btn-success"><i class="bi bi-whatsapp me-1"></i>Kirim WA</a>
             <button class="btn btn-sm btn-outline-primary copyBtn" data-msg="${encodeURIComponent(invitation.finalMessage)}"><i class="bi bi-clipboard me-1"></i>Salin Teks</button>
         </div>`
