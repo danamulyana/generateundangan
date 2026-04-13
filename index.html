@@ -28,16 +28,17 @@
         <div class="mb-3">
             <label for="templateInput" class="form-label">Template Pesan Undangan</label>
             <textarea class="form-control" id="templateInput" rows="20" placeholder="Template Pesan Undangan">
-*Bayu & Putri*
+*Andri & Ranti*
 
 Yth. Bpk/Ibu/Sdr/i *{{NAMA}}*,
 
 Kami mengundang untuk hadir di acara pernikahan kami pada:
 
-Nama: *Bayu & Putri*
-Hari/Tgl: Kamis, 26 September 2024
+Nama: *Andri & Ranti*
+Hari/Tgl: Minggu, 31 Mei 2026
 Pukul: 08.00 - Selesai
-Lokasi: Kp. mareleng 005/007 ds bojongsari, kec kedung waringin, kab bekasi
+Lokasi: Tempat mempelai wanita
+Kp. Jati Ilir 1 RT/RW 03/08 (Depan Perumahan Megaland Estate), Kel. Tunggakjati Kec. Karawang Barat Kab. Karawang
 
 Merupakan suatu kehormatan bagi kami apabila Bpk/Ibu/Sdr/i dapat menghadiri/ menyaksikan prosesi pernikahan kami pada tautan dibawah ini:
 
@@ -112,7 +113,7 @@ $(document).ready(function() {
 
         inputLines.forEach(function(line, index) {
             if(line.trim()) {
-                var generatedLink = `https://bayudanputriwedding.vercel.app/?dear=${encodeURI(line)}`;
+                var generatedLink = `https://andri-ranti.ruangnada.my.id/?dear=${encodeURI(line)}`;
 
                 // Replace {{NAMA}} and {{LINK}} in the template
                 var message = templateVal.replace('{{NAMA}}', line.trim()).replace('{{LINK}}', generatedLink);
