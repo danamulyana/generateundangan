@@ -71,6 +71,10 @@ body {
     min-height: 180px;
 }
 
+.template-preset-tools .form-select {
+    border-color: #d3e8e3;
+}
+
 .template-adjust-tools {
     display: flex;
     flex-wrap: wrap;
