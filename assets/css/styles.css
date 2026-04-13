@@ -1,0 +1,62 @@
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: #f8f9fa;
+    color: #2d3436;
+}
+
+.rn-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.btn-success {
+    background-color: #0b4d42;
+    border: none;
+}
+
+.btn-success:hover {
+    background-color: #083a32;
+}
+
+.header-gradient {
+    background: linear-gradient(135deg, #0b4d42 0%, #1a7a6b 100%);
+    color: #fff;
+    padding: 40px 0;
+    border-radius: 0 0 30px 30px;
+}
+
+.sticky-form {
+    position: sticky;
+    top: 20px;
+}
+
+.wa-format-guide {
+    background: #f1f7f6;
+    border: 1px solid #d3e8e3;
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.wa-format-title {
+    font-weight: 700;
+    color: #0b4d42;
+}
+
+.wa-format-grid {
+    display: grid;
+    gap: 4px 10px;
+    grid-template-columns: 1fr;
+    font-size: 0.9rem;
+}
+
+.wa-format-grid code {
+    color: #0b4d42;
+    font-weight: 700;
+}
+
+@media (min-width: 992px) {
+    .wa-format-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
