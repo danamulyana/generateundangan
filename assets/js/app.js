@@ -40,6 +40,7 @@ $(document).ready(async function () {
 
     const table = createLinkTable($('#linkTable'));
     let appState = getDefaultAppState();
+    let activeUsageTour = null;
 
     function getCoupleProfileFromInputs() {
         return normalizeCoupleProfile({
@@ -127,47 +128,75 @@ $(document).ready(async function () {
         }
     }
 
-    function getUsageTourSteps() {
+    function isMobileViewport() {
+        return window.matchMedia('(max-width: 767.98px)').matches;
+    }
+
+    function cleanupUsageTourArtifacts() {
+        // Prevent stale TourGuide nodes from reusing an empty/closed dialog on re-open.
+        document.querySelectorAll('.tg-dialog, .tg-backdrop, .tg-overlay, .tg-highlight').forEach((node) => {
+            node.remove();
+        });
+
+        document.body.classList.remove('tg-open', 'tg-active', 'tg-dialog-open');
+    }
+
+    function getUsageTourSteps(isMobile) {
+        const mobileStepOptions = isMobile
+            ? {
+                dialogPlacement: 'bottom',
+                targetPadding: 10
+            }
+            : {};
+
         return [
             {
                 target: '#brideNameInput',
                 title: '1. Isi Nama Pengantin',
-                content: 'Masukkan nama pengantin agar template otomatis memakai placeholder {{PENGANTIN}}, {{PENGANTIN_1}}, dan {{PENGANTIN_2}}.'
+                content: 'Masukkan nama pengantin agar template otomatis memakai placeholder {{PENGANTIN}}, {{PENGANTIN_1}}, dan {{PENGANTIN_2}}.',
+                ...mobileStepOptions
             },
             {
                 target: '#couplePresetSlot',
                 title: '2. Simpan Profil Pengantin',
-                content: 'Pilih slot lalu klik Simpan Slot. Anda juga bisa Rename Label supaya mudah dibedakan antar client.'
+                content: 'Pilih slot lalu klik Simpan Slot. Anda juga bisa Rename Label supaya mudah dibedakan antar client.',
+                ...mobileStepOptions
             },
             {
                 target: '#textareaInput',
                 title: '3. Masukkan Daftar Tamu',
-                content: 'Tulis satu nama per baris. Data ini akan dipakai untuk generate link dan pesan WhatsApp.'
+                content: 'Tulis satu nama per baris. Data ini akan dipakai untuk generate link dan pesan WhatsApp.',
+                ...mobileStepOptions
             },
             {
                 target: '#templatePreset',
                 title: '4. Pilih Template Pesan',
-                content: 'Pilih template siap pakai atau gunakan mode kustom sesuai kebutuhan acara.'
+                content: 'Pilih template siap pakai atau gunakan mode kustom sesuai kebutuhan acara.',
+                ...mobileStepOptions
             },
             {
                 target: '#templateInput',
                 title: '5. Edit Template',
-                content: 'Sesuaikan isi pesan. Anda juga bisa pakai format cepat untuk bold, italic, coret, dan monospace.'
+                content: 'Sesuaikan isi pesan. Anda juga bisa pakai format cepat untuk bold, italic, coret, dan monospace.',
+                ...mobileStepOptions
             },
             {
                 target: '#generateLinks',
                 title: '6. Generate Semua Link',
-                content: 'Klik untuk membuat link undangan, teks WhatsApp, dan mengisi tabel hasil generate.'
+                content: 'Klik untuk membuat link undangan, teks WhatsApp, dan mengisi tabel hasil generate.',
+                ...mobileStepOptions
             },
             {
                 target: '#linkTable',
                 title: '7. Kelola Data Undangan',
-                content: 'Di tabel ini Anda bisa kirim WA, salin teks, hapus satu baris, atau hapus beberapa baris sekaligus.'
+                content: 'Di tabel ini Anda bisa kirim WA, salin teks, hapus satu baris, atau hapus beberapa baris sekaligus.',
+                ...mobileStepOptions
             },
             {
                 target: '#exportCsv',
                 title: '8. Backup dan Pindah Device',
-                content: 'Gunakan Export CSV/Backup dan Import Backup dengan mode Merge atau Replace.'
+                content: 'Gunakan Export CSV/Backup dan Import Backup dengan mode Merge atau Replace.',
+                ...mobileStepOptions
             }
         ];
     }
@@ -179,8 +208,16 @@ $(document).ready(async function () {
             return;
         }
 
-        const tour = new TourGuideClient({
-            steps: getUsageTourSteps(),
+        if (activeUsageTour && typeof activeUsageTour.exit === 'function') {
+            activeUsageTour.exit();
+        }
+
+        cleanupUsageTourArtifacts();
+
+        const mobile = isMobileViewport();
+
+        activeUsageTour = new TourGuideClient({
+            steps: getUsageTourSteps(mobile),
             nextLabel: 'Lanjut',
             prevLabel: 'Kembali',
             finishLabel: 'Selesai',
@@ -188,7 +225,7 @@ $(document).ready(async function () {
             dialogClass: 'rn-tour-dialog',
             backdropClass: 'rn-tour-backdrop',
             progressBar: '#1a7a6b',
-            dialogPlacement: 'bottom',
+            dialogPlacement: mobile ? 'bottom' : 'right',
             completeOnFinish: false,
             showStepProgress: true,
             showStepDots: true,
@@ -196,11 +233,11 @@ $(document).ready(async function () {
             exitOnEscape: true,
             dialogAnimate: true,
             backdropAnimate: true,
-            targetPadding: 16,
-            autoScrollOffset: 24
+            targetPadding: mobile ? 10 : 16,
+            autoScrollOffset: mobile ? 84 : 24
         });
 
-        tour.start();
+        activeUsageTour.start();
     }
 
     async function showOnboardingModalIfNeeded() {
