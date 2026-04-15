@@ -49,7 +49,7 @@
                                 <input type="text" class="form-control" id="groomNameInput" placeholder="Nama Pengantin 2">
                             </div>
                         </div>
-                        <small class="text-muted">Dipakai otomatis untuk placeholder <code>{{PENGANTIN}}</code>, <code>{{PENGANTIN_1}}</code>, dan <code>{{PENGANTIN_2}}</code>.</small>
+                        <small class="text-muted"><i class="bi bi-magic me-1"></i>Dipakai otomatis untuk placeholder <code>{{PENGANTIN}}</code>, <code>{{PENGANTIN_1}}</code>, dan <code>{{PENGANTIN_2}}</code>.</small>
                     </div>
 
                     <div class="mb-3 profile-preset-tools">
@@ -73,13 +73,13 @@
                                 <i class="bi bi-x-circle me-1"></i><span class="button-label">Hapus</span>
                             </button>
                         </div>
-                        <small class="text-muted">Gunakan slot untuk menyimpan profil pasangan berbeda agar cepat dipakai tim lain.</small>
+                        <small class="text-muted"><i class="bi bi-bookmark-check me-1"></i>Gunakan slot untuk menyimpan profil pasangan berbeda agar cepat dipakai tim lain.</small>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-semibold"><i class="bi bi-people me-2"></i>Daftar Nama Tamu</label>
                         <textarea class="form-control" id="textareaInput" rows="6" placeholder="Budi Santoso&#10;Siti Aminah | 6281234567890&#10;Ahmad Wijaya (Keluarga)"></textarea>
-                        <small class="text-muted">Satu nama per baris. Opsional: tambah nomor HP dengan format <code>Nama | 62812345678</code></small>
+                        <small class="text-muted"><i class="bi bi-telephone-plus me-1"></i>Satu nama per baris. Opsional: tambah nomor HP dengan format <code>Nama | 62812345678</code></small>
                     </div>
                     
                     <div class="mb-3">
@@ -89,7 +89,7 @@
                                 <i class="bi bi-collection me-2"></i>Pilih Template Siap Pakai
                             </label>
                             <select class="form-select" id="templatePreset"></select>
-                            <small class="text-muted">Pilih template untuk mengisi pesan otomatis.</small>
+                            <small class="text-muted"><i class="bi bi-file-earmark-richtext me-1"></i>Pilih template untuk mengisi pesan otomatis.</small>
                         </div>
                         <div class="template-textarea-wrap">
                             <textarea class="form-control" id="templateInput" rows="8">
@@ -115,8 +115,12 @@ Terma kasih.
                                     <i class="bi bi-emoji-smile me-1"></i>Emoji
                                 </button>
                                 <div class="emoji-picker-panel" id="emojiPickerPanel" hidden>
+                                    <div class="emoji-picker-group" id="recentEmojiGroup" hidden>
+                                        <div class="emoji-picker-title"><i class="bi bi-clock-history me-1"></i>Terakhir Dipakai</div>
+                                        <div class="emoji-picker-grid" id="recentEmojiGrid"></div>
+                                    </div>
                                     <div class="emoji-picker-group">
-                                        <div class="emoji-picker-title">Romantis</div>
+                                        <div class="emoji-picker-title"><i class="bi bi-heart-fill me-1"></i>Romantis</div>
                                         <div class="emoji-picker-grid">
                                             <button type="button" class="emoji-picker-item" data-emoji="💍" aria-label="Emoji cincin">💍</button>
                                             <button type="button" class="emoji-picker-item" data-emoji="💐" aria-label="Emoji bunga">💐</button>
@@ -131,7 +135,7 @@ Terma kasih.
                                         </div>
                                     </div>
                                     <div class="emoji-picker-group">
-                                        <div class="emoji-picker-title">Perayaan</div>
+                                        <div class="emoji-picker-title"><i class="bi bi-stars me-1"></i>Perayaan</div>
                                         <div class="emoji-picker-grid">
                                             <button type="button" class="emoji-picker-item" data-emoji="✨" aria-label="Emoji kilau">✨</button>
                                             <button type="button" class="emoji-picker-item" data-emoji="🎉" aria-label="Emoji pesta">🎉</button>
@@ -145,7 +149,24 @@ Terma kasih.
                                         </div>
                                     </div>
                                     <div class="emoji-picker-group">
-                                        <div class="emoji-picker-title">Bunga & Alam</div>
+                                        <div class="emoji-picker-title"><i class="bi bi-emoji-laughing me-1"></i>Emot & Ekspresi</div>
+                                        <div class="emoji-picker-grid">
+                                            <button type="button" class="emoji-picker-item" data-emoji="😊" aria-label="Emoji senyum hangat">😊</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="😀" aria-label="Emoji senyum ceria">😀</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="😄" aria-label="Emoji tawa lebar">😄</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🥰" aria-label="Emoji senyum cinta">🥰</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="😍" aria-label="Emoji mata hati">😍</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="😘" aria-label="Emoji cium">😘</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="😇" aria-label="Emoji malaikat">😇</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🤗" aria-label="Emoji peluk">🤗</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🥹" aria-label="Emoji terharu">🥹</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="😂" aria-label="Emoji ketawa">😂</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="😉" aria-label="Emoji kedip">😉</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🤩" aria-label="Emoji takjub">🤩</button>
+                                        </div>
+                                    </div>
+                                    <div class="emoji-picker-group">
+                                        <div class="emoji-picker-title"><i class="bi bi-flower1 me-1"></i>Bunga & Alam</div>
                                         <div class="emoji-picker-grid">
                                             <button type="button" class="emoji-picker-item" data-emoji="🌹" aria-label="Emoji mawar">🌹</button>
                                             <button type="button" class="emoji-picker-item" data-emoji="🌸" aria-label="Emoji bunga sakura">🌸</button>
@@ -159,7 +180,7 @@ Terma kasih.
                                         </div>
                                     </div>
                                     <div class="emoji-picker-group">
-                                        <div class="emoji-picker-title">Pasangan & Acara</div>
+                                        <div class="emoji-picker-title"><i class="bi bi-people-fill me-1"></i>Pasangan & Acara</div>
                                         <div class="emoji-picker-grid">
                                             <button type="button" class="emoji-picker-item" data-emoji="💒" aria-label="Emoji gereja nikah">💒</button>
                                             <button type="button" class="emoji-picker-item" data-emoji="👰" aria-label="Emoji pengantin wanita">👰</button>
@@ -171,7 +192,7 @@ Terma kasih.
                                     </div>
                                 </div>
                             </div>
-                            <small class="text-muted" style="font-size: 0.75rem;">Tip: ketik <code>:nama</code> di pesan untuk saran emoji cepat</small>
+                            <small class="text-muted" style="font-size: 0.75rem;"><i class="bi bi-lightning-charge-fill me-1"></i>Tip: ketik <code>:nama</code> di pesan untuk saran emoji cepat</small>
                         </div>
                         <div class="template-adjust-tools mt-2">
                             <button type="button" class="btn btn-sm btn-light" id="templateSizeDown">
@@ -184,7 +205,7 @@ Terma kasih.
                                 <i class="bi bi-plus-lg me-1"></i>Lebih Luas
                             </button>
                         </div>
-                        <small class="text-muted d-block mt-1">Area template bisa di-drag dari pojok kanan bawah atau pakai tombol di atas.</small>
+                        <small class="text-muted d-block mt-1"><i class="bi bi-arrows-angle-expand me-1"></i>Area template bisa di-drag dari pojok kanan bawah atau pakai tombol di atas.</small>
                     </div>
                     <div class="wa-format-guide mb-3">
                         <p class="wa-format-title mb-2"><i class="bi bi-info-circle me-2"></i>Format Pesan WhatsApp</p>
@@ -213,7 +234,7 @@ Terma kasih.
                             </button>
                         </div>
                         
-                        <small class="text-muted d-block mt-2">Gunakan baris kosong untuk memberi jarak antar paragraf.</small>
+                        <small class="text-muted d-block mt-2"><i class="bi bi-text-paragraph me-1"></i>Gunakan baris kosong untuk memberi jarak antar paragraf.</small>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold"><i class="bi bi-link-45deg me-2"></i>Base URL Undangan</label>
@@ -223,7 +244,7 @@ Terma kasih.
                             id="baseUrlInput"
                             placeholder="https://domain-anda.com/?dear="
                         >
-                        <small class="text-muted">Nama tamu akan ditambahkan otomatis di akhir URL.</small>
+                        <small class="text-muted"><i class="bi bi-link-45deg me-1"></i>Nama tamu akan ditambahkan otomatis di akhir URL.</small>
                     </div>
                     <button type="button" id="generateLinks" class="btn btn-success w-100 py-2 fw-bold">
                         <i class="bi bi-stars me-2"></i>Generate Semua Link
@@ -251,10 +272,10 @@ Terma kasih.
                         <thead>
                             <tr>
                                 <th class="text-center" style="width: 46px;"><input type="checkbox" id="selectAllRows"></th>
-                                <th>No</th>
-                                <th>Nama Tamu</th>
-                                <th>No WA</th>
-                                <th>Aksi Cepat</th>
+                                <th><i class="bi bi-hash me-1"></i>No</th>
+                                <th><i class="bi bi-person-lines-fill me-1"></i>Nama Tamu</th>
+                                <th><i class="bi bi-whatsapp me-1"></i>No WA</th>
+                                <th><i class="bi bi-lightning-charge me-1"></i>Aksi Cepat</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -275,10 +296,10 @@ Terma kasih.
             <div class="col-md-4 mb-3 mb-md-0">
                 <h6 class="fw-bold mb-2"><i class="bi bi-star me-2"></i>Fitur Utama</h6>
                 <ul class="small list-unstyled">
-                    <li>✓ Template pesan fleksibel</li>
-                    <li>✓ 34+ emoji pilihan</li>
-                    <li>✓ Personal & generic link WA</li>
-                    <li>✓ Backup & import data</li>
+                    <li><i class="bi bi-chat-square-text me-2"></i>Template pesan fleksibel</li>
+                    <li><i class="bi bi-emoji-smile me-2"></i>34+ emoji pilihan</li>
+                    <li><i class="bi bi-whatsapp me-2"></i>Personal & generic link WA</li>
+                    <li><i class="bi bi-arrow-left-right me-2"></i>Backup & import data</li>
                 </ul>
             </div>
             <div class="col-md-4">

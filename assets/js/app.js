@@ -38,6 +38,8 @@ $(document).ready(async function () {
     const MIN_TEMPLATE_ROWS = 6;
     const MAX_TEMPLATE_ROWS = 30;
     const TEMPLATE_ROW_STEP = 2;
+    const RECENT_EMOJIS_KEY = 'rn_recent_emojis';
+    const RECENT_EMOJIS_LIMIT = 12;
 
     const EMOJI_SHORTHAND = {
         ring: '💍',
@@ -74,6 +76,30 @@ $(document).ready(async function () {
         kotak: '🎁',
         cake: '🎂',
         kue: '🎂',
+        smile: '😊',
+        senyum: '😊',
+        happy: '😀',
+        ceria: '😀',
+        laugh: '😄',
+        tawa: '😄',
+        love_smile: '🥰',
+        gemas: '🥰',
+        heart_eyes: '😍',
+        mata_hati: '😍',
+        kiss: '😘',
+        cium: '😘',
+        angel: '😇',
+        malaikat: '😇',
+        hug: '🤗',
+        peluk: '🤗',
+        touched: '🥹',
+        terharu: '🥹',
+        lol: '😂',
+        ketawa: '😂',
+        wink: '😉',
+        kedip: '😉',
+        wow: '🤩',
+        takjub: '🤩',
         toast: '🥂',
         bersulang: '🥂',
         fireworks: '🎆',
@@ -113,6 +139,68 @@ $(document).ready(async function () {
     let activeUsageTour = null;
     let templateSelection = { start: 0, end: 0 };
     let emojiSuggestionState = { start: -1, end: -1, prefix: '' };
+
+    function loadRecentEmojis() {
+        try {
+            const raw = localStorage.getItem(RECENT_EMOJIS_KEY);
+            if (!raw) {
+                return [];
+            }
+
+            const parsed = JSON.parse(raw);
+            if (!Array.isArray(parsed)) {
+                return [];
+            }
+
+            return parsed
+                .map((item) => String(item || '').trim())
+                .filter((item) => item !== '')
+                .slice(0, RECENT_EMOJIS_LIMIT);
+        } catch (error) {
+            return [];
+        }
+    }
+
+    function saveRecentEmojis(items) {
+        localStorage.setItem(RECENT_EMOJIS_KEY, JSON.stringify(items.slice(0, RECENT_EMOJIS_LIMIT)));
+    }
+
+    function renderRecentEmojis() {
+        const group = $('#recentEmojiGroup');
+        const grid = $('#recentEmojiGrid');
+        const recent = loadRecentEmojis();
+
+        grid.empty();
+
+        if (recent.length === 0) {
+            group.prop('hidden', true);
+            return;
+        }
+
+        recent.forEach((emoji) => {
+            const button = $('<button>')
+                .attr('type', 'button')
+                .addClass('emoji-picker-item')
+                .attr('data-emoji', emoji)
+                .attr('aria-label', `Emoji terbaru ${emoji}`)
+                .text(emoji);
+
+            grid.append(button);
+        });
+
+        group.prop('hidden', false);
+    }
+
+    function addRecentEmoji(emoji) {
+        const normalized = String(emoji || '').trim();
+        if (normalized === '') {
+            return;
+        }
+
+        const next = [normalized, ...loadRecentEmojis().filter((item) => item !== normalized)].slice(0, RECENT_EMOJIS_LIMIT);
+        saveRecentEmojis(next);
+        renderRecentEmojis();
+    }
 
     function initAnalytics() {
         const measurementId = String(GA_MEASUREMENT_ID || '').trim();
@@ -236,6 +324,7 @@ $(document).ready(async function () {
         const panel = $('#emojiPickerPanel');
         const toggle = $('#emojiPickerToggle');
 
+        renderRecentEmojis();
         panel.prop('hidden', false).addClass('is-open');
         toggle.attr('aria-expanded', 'true');
     }
@@ -329,6 +418,7 @@ $(document).ready(async function () {
         textarea.setSelectionRange(cursorPosition, cursorPosition);
         textarea.focus();
 
+        addRecentEmoji(emoji);
         closeEmojiInlineSuggestion();
     }
 
@@ -950,6 +1040,7 @@ $(document).ready(async function () {
         insertTemplateText(snippet);
 
         if ($(this).hasClass('emoji-picker-item')) {
+            addRecentEmoji(snippet);
             trackAnalyticsEvent('insert_emoji', {
                 source: 'picker'
             });
