@@ -407,6 +407,32 @@ button {
     white-space: nowrap;
 }
 
+.rn-footer {
+    background-color: #fff;
+    border-top: 1px solid #d3e8e3;
+    margin-top: auto;
+    margin-bottom: 0;
+}
+
+.rn-footer h6 {
+    color: #0b4d42;
+    font-size: 0.95rem;
+}
+
+.rn-footer .small {
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+
+.rn-footer ul li {
+    margin-bottom: 0.3rem;
+    color: #555;
+}
+
+.rn-footer hr {
+    border-color: #e8e8e8;
+}
+
 @media (max-width: 991.98px) {
     .sticky-form {
         position: static;
