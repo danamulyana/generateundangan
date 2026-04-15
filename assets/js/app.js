@@ -10,10 +10,11 @@ import {
     saveTemplate,
     saveTemplateRows
 } from './storage.js';
-import { parseNames, buildInvitationLink, buildFinalMessage, buildWhatsAppUrl, parseGuestWithPhone, buildWhatsAppUrlPersonal } from './message.js';
+import { buildInvitationLink, buildFinalMessage, buildWhatsAppUrl, parseGuestWithPhone, buildWhatsAppUrlPersonal } from './message.js';
 import { createLinkTable, renderInvitationRows } from './table.js';
 import {
     DEFAULT_BASE_INVITATION_URL,
+    GA_MEASUREMENT_ID,
     getDefaultAppState,
     normalizeBaseInvitationUrl,
     normalizeCoupleProfile,
@@ -112,6 +113,42 @@ $(document).ready(async function () {
     let activeUsageTour = null;
     let templateSelection = { start: 0, end: 0 };
     let emojiSuggestionState = { start: -1, end: -1, prefix: '' };
+
+    function initAnalytics() {
+        const measurementId = String(GA_MEASUREMENT_ID || '').trim();
+        if (!measurementId) {
+            return;
+        }
+
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = window.gtag || function gtag() {
+            window.dataLayer.push(arguments);
+        };
+
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
+        document.head.appendChild(script);
+
+        window.gtag('js', new Date());
+        window.gtag('config', measurementId, {
+            anonymize_ip: true,
+            send_page_view: true
+        });
+    }
+
+    function trackAnalyticsEvent(eventName, params = {}) {
+        if (typeof window.gtag !== 'function') {
+            return;
+        }
+
+        window.gtag('event', eventName, {
+            app_name: 'RuangNada Generator',
+            ...params
+        });
+    }
+
+    initAnalytics();
 
     function getCoupleProfileFromInputs() {
         return normalizeCoupleProfile({
@@ -697,6 +734,10 @@ $(document).ready(async function () {
         const ok = await persistAppStateWithWarning('Preset profil pengantin gagal disimpan.');
         if (ok) {
             updateCouplePresetSelectLabels();
+            trackAnalyticsEvent('save_couple_preset', {
+                slot_id: slotId,
+                has_auto_label: autoLabel !== ''
+            });
             Swal.fire('Berhasil!', `Profil pengantin tersimpan di ${slotId.toUpperCase()}.`, 'success');
         }
     });
@@ -736,6 +777,10 @@ $(document).ready(async function () {
         const ok = await persistAppStateWithWarning('Label profil gagal disimpan.');
         if (ok) {
             updateCouplePresetSelectLabels();
+            trackAnalyticsEvent('rename_couple_preset', {
+                slot_id: slotId,
+                has_label: nextLabel !== ''
+            });
             Swal.fire('Berhasil!', `Label ${getDefaultSlotLabel(slotId)} diperbarui.`, 'success');
         }
     });
@@ -754,6 +799,9 @@ $(document).ready(async function () {
             ...appState,
             coupleProfile: normalizeCoupleProfile(preset)
         };
+        trackAnalyticsEvent('load_couple_preset', {
+            slot_id: slotId
+        });
         Swal.fire('Berhasil!', `Profil dari ${slotId.toUpperCase()} sudah dimuat.`, 'success');
     });
 
@@ -777,23 +825,39 @@ $(document).ready(async function () {
         const ok = await persistAppStateWithWarning('Gagal menghapus preset profil pengantin.');
         if (ok) {
             updateCouplePresetSelectLabels();
+            trackAnalyticsEvent('delete_couple_preset', {
+                slot_id: slotId
+            });
             Swal.fire('Berhasil!', `Preset ${slotId.toUpperCase()} berhasil dihapus.`, 'success');
         }
     });
 
     $('#templateSizeDown').on('click', function () {
         adjustTemplateRows(-TEMPLATE_ROW_STEP);
+        trackAnalyticsEvent('adjust_template_rows', {
+            action: 'decrease',
+            rows: Number($('#templateInput').attr('rows')) || DEFAULT_TEMPLATE_ROWS
+        });
     });
 
     $('#templateSizeUp').on('click', function () {
         adjustTemplateRows(TEMPLATE_ROW_STEP);
+        trackAnalyticsEvent('adjust_template_rows', {
+            action: 'increase',
+            rows: Number($('#templateInput').attr('rows')) || DEFAULT_TEMPLATE_ROWS
+        });
     });
 
     $('#templateSizeReset').on('click', function () {
         setTemplateRows(DEFAULT_TEMPLATE_ROWS);
+        trackAnalyticsEvent('adjust_template_rows', {
+            action: 'reset',
+            rows: DEFAULT_TEMPLATE_ROWS
+        });
     });
 
     $('#openUsageTour').on('click', function () {
+        trackAnalyticsEvent('open_usage_tour');
         startUsageTour();
     });
 
@@ -802,10 +866,16 @@ $(document).ready(async function () {
 
         if (selectedPresetId === CUSTOM_TEMPLATE_PRESET) {
             saveSelectedTemplatePreset(CUSTOM_TEMPLATE_PRESET);
+            trackAnalyticsEvent('select_template_preset', {
+                preset_id: CUSTOM_TEMPLATE_PRESET
+            });
             return;
         }
 
         applyPresetById(selectedPresetId);
+        trackAnalyticsEvent('select_template_preset', {
+            preset_id: selectedPresetId
+        });
         Swal.fire('Template Dipakai', 'Template pesan berhasil diisi otomatis.', 'success');
     });
 
@@ -854,7 +924,14 @@ $(document).ready(async function () {
 
         await persistAppStateWithWarning('Data gagal disimpan ke IndexedDB.');
 
-        Swal.fire('Berhasil!', `${names.length} Undangan siap dikirim.`, 'success');
+        const personalRecipients = guests.filter((guest) => guest.phone).length;
+        trackAnalyticsEvent('generate_links', {
+            total_invites: guests.length,
+            personal_recipients: personalRecipients,
+            generic_recipients: guests.length - personalRecipients
+        });
+
+        Swal.fire('Berhasil!', `${guests.length} Undangan siap dikirim.`, 'success');
     });
 
     $('#templateInput').on('select keyup mouseup click input', function () {
@@ -869,11 +946,24 @@ $(document).ready(async function () {
         }
 
         insertTemplateText(snippet);
+
+        if ($(this).hasClass('emoji-picker-item')) {
+            trackAnalyticsEvent('insert_emoji', {
+                source: 'picker'
+            });
+        } else {
+            trackAnalyticsEvent('insert_format_snippet');
+        }
+
         closeEmojiPicker();
     });
 
     $('#emojiPickerToggle').on('click', function (event) {
         event.stopPropagation();
+        const isClosed = $('#emojiPickerPanel').is('[hidden]');
+        trackAnalyticsEvent('toggle_emoji_picker', {
+            action: isClosed ? 'open' : 'close'
+        });
         toggleEmojiPicker();
     });
 
@@ -912,6 +1002,10 @@ $(document).ready(async function () {
         const msg = decodeURIComponent($(this).data('msg'));
         navigator.clipboard.writeText(msg);
 
+        trackAnalyticsEvent('copy_message_text', {
+            message_length: msg.length
+        });
+
         $(this)
             .text('Tersalin!')
             .addClass('btn-primary')
@@ -938,8 +1032,18 @@ $(document).ready(async function () {
 
         const deletedCount = await removeInvitationsByIds([invitationId]);
         if (deletedCount > 0) {
+            trackAnalyticsEvent('delete_single_row');
             Swal.fire('Berhasil!', '1 baris berhasil dihapus.', 'success');
         }
+    });
+
+    $(document).on('click', '.sendWaBtn', function () {
+        const invitationId = String($(this).data('id') || '');
+        const invitation = appState.invitations.find((item) => item.id === invitationId);
+
+        trackAnalyticsEvent('send_whatsapp_click', {
+            recipient_type: invitation?.whatsappNumber ? 'personal' : 'generic'
+        });
     });
 
     $(document).on('change', '#selectAllRows', function () {
@@ -973,11 +1077,16 @@ $(document).ready(async function () {
 
         const deletedCount = await removeInvitationsByIds(selectedIds);
         if (deletedCount > 0) {
+            trackAnalyticsEvent('delete_selected_rows', {
+                deleted_count: deletedCount
+            });
             Swal.fire('Berhasil!', `${deletedCount} baris berhasil dihapus.`, 'success');
         }
     });
 
     $('#clearTable').on('click', async function () {
+        const previousCount = appState.invitations.length;
+
         appState = {
             ...appState,
             invitations: [],
@@ -995,6 +1104,10 @@ $(document).ready(async function () {
 
         table.clear().draw();
         $('#textareaInput').val('');
+
+        trackAnalyticsEvent('clear_table', {
+            removed_invites: previousCount
+        });
     });
 
     $('#exportCsv').on('click', function () {
@@ -1004,15 +1117,22 @@ $(document).ready(async function () {
         }
 
         exportInvitationsAsCsv(appState.invitations);
+        trackAnalyticsEvent('export_csv', {
+            invite_count: appState.invitations.length
+        });
     });
 
     $('#exportJson').on('click', function () {
         exportStateAsJson(appState);
+        trackAnalyticsEvent('export_backup_json', {
+            invite_count: appState.invitations.length
+        });
     });
 
     $('#importJson').on('click', function () {
         $('#importFileInput').val('');
         $('#importFileInput').trigger('click');
+        trackAnalyticsEvent('open_import_dialog');
     });
 
     $('#importFileInput').on('change', async function (event) {
@@ -1020,6 +1140,10 @@ $(document).ready(async function () {
         if (!file) {
             return;
         }
+
+        trackAnalyticsEvent('select_import_file', {
+            file_size_kb: Math.round((file.size || 0) / 1024)
+        });
 
         try {
             const payload = await readJsonFile(file);
@@ -1072,6 +1196,11 @@ $(document).ready(async function () {
                 renderInvitationRows(table, appState.invitations);
                 await persistAppStateWithWarning('Data import gagal disimpan ke IndexedDB.');
 
+                trackAnalyticsEvent('import_backup', {
+                    mode: 'replace',
+                    imported_count: appState.invitations.length
+                });
+
                 Swal.fire('Berhasil!', `${appState.invitations.length} data berhasil diimport dengan mode replace.`, 'success');
                 return;
             }
@@ -1086,6 +1215,13 @@ $(document).ready(async function () {
 
             renderInvitationRows(table, appState.invitations);
             await persistAppStateWithWarning('Data merge gagal disimpan ke IndexedDB.');
+
+            trackAnalyticsEvent('import_backup', {
+                mode: 'merge',
+                added_count: mergeResult.addedCount,
+                skipped_count: mergeResult.skippedCount,
+                total_count: appState.invitations.length
+            });
 
             Swal.fire(
                 'Merge Selesai!',

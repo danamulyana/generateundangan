@@ -15,7 +15,7 @@ export function addGeneratedRow(table, index, invitation) {
         `<strong>${invitation.name}</strong>`,
         invitation.whatsappNumber ? `<span class="badge bg-success-subtle text-success" title="Personal WA"><i class="bi bi-telephone-fill me-1"></i>${invitation.whatsappNumber}</span>` : `<span class="text-muted text-sm">-</span>`,
         `<div class="quick-actions">
-            <a href="${invitation.waUrl}" target="_blank" class="btn btn-sm btn-success"><i class="bi bi-whatsapp me-1"></i>Kirim WA</a>
+            <a href="${invitation.waUrl}" target="_blank" class="btn btn-sm btn-success sendWaBtn" data-id="${invitation.id}"><i class="bi bi-whatsapp me-1"></i>Kirim WA</a>
             <button class="btn btn-sm btn-outline-primary copyBtn" data-msg="${encodeURIComponent(invitation.finalMessage)}"><i class="bi bi-clipboard me-1"></i>Salin Teks</button>
             <button class="btn btn-sm btn-outline-danger deleteRowBtn" data-id="${invitation.id}"><i class="bi bi-trash me-1"></i>Hapus</button>
         </div>`
