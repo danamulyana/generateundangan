@@ -39,7 +39,7 @@ $(document).ready(async function () {
     const MAX_TEMPLATE_ROWS = 30;
     const TEMPLATE_ROW_STEP = 2;
     const RECENT_EMOJIS_KEY = 'rn_recent_emojis';
-    const RECENT_EMOJIS_LIMIT = 12;
+    const RECENT_EMOJIS_LIMIT = 5;
 
     const EMOJI_SHORTHAND = {
         ring: '💍',
@@ -634,9 +634,10 @@ $(document).ready(async function () {
                 <div style="text-align:left; font-size:0.95rem; line-height:1.5;">
                     <p class="mb-2"><strong>Fitur yang tersedia:</strong></p>
                     <ul class="mb-3">
-                        <li>Generate link undangan WhatsApp otomatis dari daftar nama.</li>
+                        <li>Generate link undangan WhatsApp otomatis (personal jika nomor tersedia, generik jika tidak).</li>
                         <li>Pilihan template pesan siap pakai + mode kustom.</li>
-                        <li>Format cepat WhatsApp (bold, italic, coret, monospace).</li>
+                        <li>Format cepat WhatsApp (bold, italic, coret, monospace) + emoji picker lengkap.</li>
+                        <li>Saran emoji cepat dengan format <code>:nama</code> dan fitur emoji terakhir dipakai.</li>
                         <li>Auto-save data di browser (tetap ada saat refresh).</li>
                         <li>Export CSV, Export Backup, dan Import Backup lintas device.</li>
                         <li>Import mode Merge/Replace dengan deteksi duplikat.</li>
@@ -647,8 +648,8 @@ $(document).ready(async function () {
                             <ul class="mb-0">
                                 <li>Pastikan undangan yang dibuat memang digunakan untuk acara Anda dan untuk penerima yang berhak dihubungi.</li>
                                 <li>Dilarang menggunakan tool ini untuk spam, penipuan, penyamaran identitas, atau aktivitas yang melanggar hukum.</li>
-                                <li>Nama pengantin, template pesan, dan profil preset yang disimpan di browser hanya tersimpan lokal pada perangkat Anda melalui browser storage dan IndexedDB.</li>
-                                <li>Jika Anda memakai fitur export/import, pastikan file backup disimpan aman karena isinya dapat memuat daftar tamu, pesan, base URL, dan profil pengantin.</li>
+                                <li>Nama pengantin, template pesan, daftar tamu, profil preset, dan emoji terakhir dipakai disimpan lokal pada browser/perangkat Anda.</li>
+                                <li>Jika Anda memakai fitur export/import, simpan file backup dengan aman karena dapat memuat daftar tamu, nomor WA, pesan, base URL, serta profil pengantin.</li>
                                 <li>Fitur merge saat import akan menambahkan data baru dan melewati duplikat, tetapi tetap menjadi tanggung jawab pengguna untuk memeriksa hasil akhirnya.</li>
                                 <li>Fitur hapus row, hapus terpilih, reset data, atau replace import akan mengubah data yang tersimpan di browser. Pastikan Anda sudah melakukan backup jika diperlukan.</li>
                                 <li>Tool ini disediakan "sebagaimana adanya". RuangNada tidak menjamin pengiriman pesan berhasil jika nomor WhatsApp tujuan tidak aktif, format pesan salah, atau layanan pihak ketiga mengalami gangguan.</li>
