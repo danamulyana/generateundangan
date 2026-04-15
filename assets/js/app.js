@@ -129,7 +129,7 @@ $(document).ready(async function () {
             const script = document.createElement('script');
             script.async = true;
             script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
-            document.body.appendChild(script);
+            document.head.appendChild(script);
         }
 
         window.gtag('js', new Date());
