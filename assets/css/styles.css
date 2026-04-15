@@ -353,15 +353,48 @@ button {
     background-color: #f0fffe;
 }
 
+/* WhatsApp Number Column Styling */
+#linkTable th:nth-child(4),
+#linkTable td:nth-child(4) {
+    text-align: center;
+    width: 120px;
+}
+
+#linkTable .badge {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.5rem;
+    white-space: nowrap;
+}
+
+.text-sm {
+    font-size: 0.875rem;
+}
+
 .template-adjust-tools {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 6px;
+    margin-top: 8px;
 }
 
 .template-adjust-tools .btn {
     border: 1px solid #d3e8e3;
     font-size: 0.8rem;
+    min-height: 36px;
+    padding: 0.5rem 0.75rem;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.template-adjust-tools .btn:hover,
+.template-adjust-tools .btn:focus {
+    border-color: #0b4d42;
+    background-color: #f0fffe;
+    outline: none;
 }
 
 .quick-actions {
@@ -416,9 +449,19 @@ button {
 
     .table-action-buttons .btn,
     .wa-snippet-actions .btn,
-    .emoji-picker-toggle,
-    .template-adjust-tools .btn {
+    .emoji-picker-toggle {
         flex: 1 1 calc(50% - 6px);
+    }
+
+    .template-adjust-tools {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 4px;
+    }
+
+    .template-adjust-tools .btn {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.4rem;
+        min-height: 34px;
     }
 
     .emoji-picker-panel {
@@ -575,11 +618,26 @@ button {
 
     .table-action-buttons .btn,
     .wa-snippet-actions .btn,
-    .template-adjust-tools .btn,
     .emoji-picker-toggle {
         flex: 1 1 calc(50% - 2px);
         font-size: 0.65rem;
         padding: 0.25rem 0.4rem !important;
+    }
+
+    .template-adjust-tools {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 3px;
+    }
+
+    .template-adjust-tools .btn {
+        font-size: 0.65rem;
+        padding: 0.35rem 0.25rem !important;
+        min-height: 32px;
+    }
+
+    .template-adjust-tools .btn i {
+        font-size: 0.85rem;
+        margin-right: 0.25rem !important;
     }
 
     .preset-buttons-grid {
@@ -608,6 +666,19 @@ button {
 
     .dataTables_wrapper .dataTables_filter input {
         font-size: 14px;
+    }
+
+    /* Responsive table columns for mobile */
+    #linkTable th:nth-child(4),
+    #linkTable td:nth-child(4) {
+        width: 80px;
+        font-size: 0.75rem;
+        padding: 0.5rem 0.25rem !important;
+    }
+
+    #linkTable .badge {
+        font-size: 0.65rem;
+        padding: 0.25rem 0.35rem;
     }
 
     .dataTables_wrapper .dataTables_length,

@@ -1,4 +1,5 @@
 const WHATSAPP_URL = 'https://api.whatsapp.com/send?text=';
+const WHATSAPP_PERSONAL_URL = 'https://api.whatsapp.com/send?phone=';
 
 export function encodeWhatsAppText(message) {
     return encodeURIComponent(String(message || ''));
@@ -9,6 +10,23 @@ export function parseNames(rawNames) {
         .split('\n')
         .map((name) => name.trim())
         .filter((name) => name !== '');
+}
+
+export function parseGuestWithPhone(rawGuests) {
+    return rawGuests
+        .split('\n')
+        .map((line) => {
+            const trimmed = line.trim();
+            const parts = trimmed.split('|').map(p => p.trim());
+            
+            if (parts.length === 2) {
+                const name = parts[0];
+                const phone = parts[1].replace(/\D/g, ''); // Extract digits only
+                return { name, phone: phone || null };
+            }
+            return { name: trimmed, phone: null };
+        })
+        .filter((item) => item.name !== '');
 }
 
 export function buildInvitationLink(name, baseInvitationUrl) {
@@ -30,4 +48,17 @@ export function buildFinalMessage(template, name, invitationLink, coupleProfile)
 
 export function buildWhatsAppUrl(message) {
     return `${WHATSAPP_URL}${encodeWhatsAppText(message)}`;
+}
+
+export function buildWhatsAppUrlPersonal(phone, message) {
+    // Ensure phone starts with country code (62 for Indonesia)
+    let normalizedPhone = phone.toString().replace(/\D/g, '');
+    if (normalizedPhone.startsWith('0')) {
+        normalizedPhone = '62' + normalizedPhone.slice(1);
+    }
+    if (!normalizedPhone.startsWith('62')) {
+        normalizedPhone = '62' + normalizedPhone;
+    }
+    
+    return `${WHATSAPP_PERSONAL_URL}${normalizedPhone}&text=${encodeWhatsAppText(message)}`;
 }

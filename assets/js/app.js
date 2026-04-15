@@ -10,7 +10,7 @@ import {
     saveTemplate,
     saveTemplateRows
 } from './storage.js';
-import { parseNames, buildInvitationLink, buildFinalMessage, buildWhatsAppUrl } from './message.js';
+import { parseNames, buildInvitationLink, buildFinalMessage, buildWhatsAppUrl, parseGuestWithPhone, buildWhatsAppUrlPersonal } from './message.js';
 import { createLinkTable, renderInvitationRows } from './table.js';
 import {
     DEFAULT_BASE_INVITATION_URL,
@@ -419,7 +419,7 @@ $(document).ready(async function () {
             {
                 target: '#textareaInput',
                 title: '3. Masukkan Daftar Tamu',
-                content: 'Tulis satu nama per baris. Data ini akan dipakai untuk generate link dan pesan WhatsApp.',
+                content: 'Format: satu nama per baris. Opsional: tambah nomor HP dengan format "Nama | 6281234567890" untuk kirim personal WA. Jika tanpa nomor, akan generate link generik.',
                 ...mobileStepOptions
             },
             {
@@ -430,26 +430,26 @@ $(document).ready(async function () {
             },
             {
                 target: '#templateInput',
-                title: '5. Edit Template',
-                content: 'Sesuaikan isi pesan. Anda juga bisa pakai format cepat untuk bold, italic, coret, monospace, dan picker emoji ringkas.',
+                title: '5. Edit Template & Tambah Emoji',
+                content: 'Sesuaikan isi pesan. Gunakan tombol Emoji untuk pilih 34+ emoji, atau ketik :name (cth: :ring, :party, :love) untuk saran cepat. Juga ada format bold, italic, coret, monospace.',
                 ...mobileStepOptions
             },
             {
                 target: '#generateLinks',
                 title: '6. Generate Semua Link',
-                content: 'Klik untuk membuat link undangan, teks WhatsApp, dan mengisi tabel hasil generate.',
+                content: 'Klik untuk membuat link undangan, teks WhatsApp, dan mengisi tabel hasil generate. Sistem akan otomatis mendeteksi nomor HP yang ada.',
                 ...mobileStepOptions
             },
             {
                 target: '#linkTable',
                 title: '7. Kelola Data Undangan',
-                content: 'Di tabel ini Anda bisa kirim WA, salin teks, hapus satu baris, atau hapus beberapa baris sekaligus.',
+                content: 'Di tabel: lihat nomor WA (personal atau generik), kirim WA langsung, salin teks, hapus satu/banyak baris. Kolom "No WA" menunjukkan nomor personal atau "-" jika generik.',
                 ...mobileStepOptions
             },
             {
                 target: '#exportCsv',
                 title: '8. Backup dan Pindah Device',
-                content: 'Gunakan Export CSV/Backup dan Import Backup dengan mode Merge atau Replace.',
+                content: 'Gunakan Export CSV/Backup dan Import Backup dengan mode Merge atau Replace. Data tamu (termasuk nomor HP) tersimpan aman di browser Anda.',
                 ...mobileStepOptions
             }
         ];
@@ -810,12 +810,12 @@ $(document).ready(async function () {
     });
 
     $('#generateLinks').on('click', async function () {
-        const names = parseNames($('#textareaInput').val());
+        const guests = parseGuestWithPhone($('#textareaInput').val());
         const template = $('#templateInput').val();
         const baseInvitationUrl = normalizeBaseInvitationUrl($('#baseUrlInput').val());
         const coupleProfile = getCoupleProfileFromInputs();
 
-        if (names.length === 0) {
+        if (guests.length === 0) {
             Swal.fire('Oops!', 'Masukkan minimal satu nama tamu.', 'warning');
             return;
         }
@@ -823,14 +823,19 @@ $(document).ready(async function () {
         saveTemplate(template);
         $('#baseUrlInput').val(baseInvitationUrl);
 
-        const invitations = names.map((name) => {
-            const invitationLink = buildInvitationLink(name, baseInvitationUrl);
-            const finalMessage = buildFinalMessage(template, name, invitationLink, coupleProfile);
-            const waUrl = buildWhatsAppUrl(finalMessage);
+        const invitations = guests.map((guest) => {
+            const invitationLink = buildInvitationLink(guest.name, baseInvitationUrl);
+            const finalMessage = buildFinalMessage(template, guest.name, invitationLink, coupleProfile);
+            
+            // Use personal WhatsApp URL if phone number provided, otherwise use generic
+            const waUrl = guest.phone 
+                ? buildWhatsAppUrlPersonal(guest.phone, finalMessage)
+                : buildWhatsAppUrl(finalMessage);
 
             return {
                 id: `inv-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-                name,
+                name: guest.name,
+                whatsappNumber: guest.phone || null,
                 invitationLink,
                 finalMessage,
                 waUrl,

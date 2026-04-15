@@ -13,6 +13,7 @@ export function addGeneratedRow(table, index, invitation) {
         `<div class="text-center"><input type="checkbox" class="rowSelect" data-id="${invitation.id}"></div>`,
         index + 1,
         `<strong>${invitation.name}</strong>`,
+        invitation.whatsappNumber ? `<span class="badge bg-success-subtle text-success" title="Personal WA"><i class="bi bi-telephone-fill me-1"></i>${invitation.whatsappNumber}</span>` : `<span class="text-muted text-sm">-</span>`,
         `<div class="quick-actions">
             <a href="${invitation.waUrl}" target="_blank" class="btn btn-sm btn-success"><i class="bi bi-whatsapp me-1"></i>Kirim WA</a>
             <button class="btn btn-sm btn-outline-primary copyBtn" data-msg="${encodeURIComponent(invitation.finalMessage)}"><i class="bi bi-clipboard me-1"></i>Salin Teks</button>
