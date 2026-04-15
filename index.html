@@ -2,12 +2,14 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="RuangNada Generator membantu membuat undangan WhatsApp secara cepat dengan template, auto-generate link, backup/import data, dan manajemen daftar tamu.">
     <meta name="keywords" content="generator undangan, whatsapp invitation, wedding, ruangnada, template pesan, export import undangan">
     <meta name="author" content="RuangNada">
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#0b4d42">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Generator Undangan | RuangNada">
     <meta property="og:description" content="Buat undangan WhatsApp otomatis dengan template, pengelolaan tamu, dan backup data lintas device.">
@@ -50,31 +52,25 @@
                     </div>
 
                     <div class="mb-3 profile-preset-tools">
-                        <label class="form-label fw-semibold"><i class="bi bi-bookmark-heart me-2"></i>Preset Profil Pengantin</label>
-                        <div class="row g-2 align-items-end">
-                            <div class="col-12 col-md-5">
-                                <select class="form-select" id="couplePresetSlot">
-                                    <option value="profil-a">Profil A</option>
-                                    <option value="profil-b">Profil B</option>
-                                    <option value="profil-c">Profil C</option>
-                                </select>
-                            </div>
-                            <div class="col-12 col-md-7">
-                                <div class="d-flex gap-2 flex-wrap">
-                                    <button type="button" class="btn btn-sm btn-light" id="saveCouplePreset">
-                                        <i class="bi bi-save me-1"></i>Simpan Slot
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-light" id="renameCouplePreset">
-                                        <i class="bi bi-pencil-square me-1"></i>Rename Label
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-light" id="loadCouplePreset">
-                                        <i class="bi bi-arrow-down-circle me-1"></i>Muat Slot
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-light" id="deleteCouplePreset">
-                                        <i class="bi bi-x-circle me-1"></i>Hapus Slot
-                                    </button>
-                                </div>
-                            </div>
+                        <label class="form-label fw-semibold mb-2"><i class="bi bi-bookmark-heart me-2"></i>Preset Profil Pengantin</label>
+                        <select class="form-select mb-2" id="couplePresetSlot" style="margin-bottom: 8px;">
+                            <option value="profil-a">Profil A</option>
+                            <option value="profil-b">Profil B</option>
+                            <option value="profil-c">Profil C</option>
+                        </select>
+                        <div class="preset-buttons-grid">
+                            <button type="button" class="btn btn-sm btn-light" id="saveCouplePreset" title="Simpan profil pengantin ke slot ini">
+                                <i class="bi bi-save me-1"></i><span class="button-label">Simpan</span>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-light" id="renameCouplePreset" title="Ganti nama label profil">
+                                <i class="bi bi-pencil-square me-1"></i><span class="button-label">Rename</span>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-light" id="loadCouplePreset" title="Muat profil dari slot ini">
+                                <i class="bi bi-arrow-down-circle me-1"></i><span class="button-label">Muat</span>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-light" id="deleteCouplePreset" title="Hapus profil di slot ini">
+                                <i class="bi bi-x-circle me-1"></i><span class="button-label">Hapus</span>
+                            </button>
                         </div>
                         <small class="text-muted">Gunakan slot untuk menyimpan profil pasangan berbeda agar cepat dipakai tim lain.</small>
                     </div>
@@ -123,10 +119,14 @@ Terma kasih.
                                         <div class="emoji-picker-grid">
                                             <button type="button" class="emoji-picker-item" data-emoji="💍" aria-label="Emoji cincin">💍</button>
                                             <button type="button" class="emoji-picker-item" data-emoji="💐" aria-label="Emoji bunga">💐</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="❤️" aria-label="Emoji hati merah">❤️</button>
                                             <button type="button" class="emoji-picker-item" data-emoji="🤍" aria-label="Emoji hati putih">🤍</button>
                                             <button type="button" class="emoji-picker-item" data-emoji="💖" aria-label="Emoji hati berkilau">💖</button>
-                                            <button type="button" class="emoji-picker-item" data-emoji="💝" aria-label="Emoji hadiah">💝</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="💕" aria-label="Emoji dua hati">💕</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="💝" aria-label="Emoji hadiah hati">💝</button>
                                             <button type="button" class="emoji-picker-item" data-emoji="💌" aria-label="Emoji surat cinta">💌</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="💎" aria-label="Emoji berlian">💎</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🎀" aria-label="Emoji pita">🎀</button>
                                         </div>
                                     </div>
                                     <div class="emoji-picker-group">
@@ -136,19 +136,36 @@ Terma kasih.
                                             <button type="button" class="emoji-picker-item" data-emoji="🎉" aria-label="Emoji pesta">🎉</button>
                                             <button type="button" class="emoji-picker-item" data-emoji="🎊" aria-label="Emoji konfeti">🎊</button>
                                             <button type="button" class="emoji-picker-item" data-emoji="🎈" aria-label="Emoji balon">🎈</button>
-                                            <button type="button" class="emoji-picker-item" data-emoji="🥂" aria-label="Emoji bersulang">🥂</button>
                                             <button type="button" class="emoji-picker-item" data-emoji="🎁" aria-label="Emoji hadiah kotak">🎁</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🥂" aria-label="Emoji bersulang">🥂</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🎂" aria-label="Emoji kue">🎂</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🎆" aria-label="Emoji kembang api">🎆</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🍾" aria-label="Emoji botol sampanye">🍾</button>
                                         </div>
                                     </div>
                                     <div class="emoji-picker-group">
-                                        <div class="emoji-picker-title">Nuansa</div>
+                                        <div class="emoji-picker-title">Bunga & Alam</div>
                                         <div class="emoji-picker-grid">
-                                            <button type="button" class="emoji-picker-item" data-emoji="🕊️" aria-label="Emoji merpati">🕊️</button>
-                                            <button type="button" class="emoji-picker-item" data-emoji="🌸" aria-label="Emoji bunga sakura">🌸</button>
-                                            <button type="button" class="emoji-picker-item" data-emoji="🌷" aria-label="Emoji tulip">🌷</button>
                                             <button type="button" class="emoji-picker-item" data-emoji="🌹" aria-label="Emoji mawar">🌹</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🌸" aria-label="Emoji bunga sakura">🌸</button>
                                             <button type="button" class="emoji-picker-item" data-emoji="🌺" aria-label="Emoji hibiscus">🌺</button>
-                                            <button type="button" class="emoji-picker-item" data-emoji="🌿" aria-label="Emoji daun">🌿</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🌷" aria-label="Emoji tulip">🌷</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🌼" aria-label="Emoji bunga matahari">🌼</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🌻" aria-label="Emoji sunflower">🌻</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🌿" aria-label="Emoji daun hijau">🌿</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🍀" aria-label="Emoji semanggi">🍀</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🕊️" aria-label="Emoji merpati">🕊️</button>
+                                        </div>
+                                    </div>
+                                    <div class="emoji-picker-group">
+                                        <div class="emoji-picker-title">Pasangan & Acara</div>
+                                        <div class="emoji-picker-grid">
+                                            <button type="button" class="emoji-picker-item" data-emoji="💒" aria-label="Emoji gereja nikah">💒</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="👰" aria-label="Emoji pengantin wanita">👰</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🤵" aria-label="Emoji pengantin pria">🤵</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="💑" aria-label="Emoji pasangan">💑</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="👨‍👩‍👧‍👦" aria-label="Emoji keluarga">👨‍👩‍👧‍👦</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🎂" aria-label="Emoji kue ulang tahun">🎂</button>
                                         </div>
                                     </div>
                                 </div>
@@ -194,46 +211,7 @@ Terma kasih.
                                 <i class="bi bi-code-slash me-1"></i>Tambah Monospace
                             </button>
                         </div>
-                        <div class="emoji-picker-wrap mt-2">
-                            <button type="button" class="btn btn-sm btn-light emoji-picker-toggle" id="emojiPickerToggle" aria-expanded="false" aria-controls="emojiPickerPanel">
-                                <i class="bi bi-emoji-smile me-1"></i>Pilih Emoji
-                            </button>
-                            <div class="emoji-picker-panel" id="emojiPickerPanel" hidden>
-                                <div class="emoji-picker-group">
-                                    <div class="emoji-picker-title">Romantis</div>
-                                    <div class="emoji-picker-grid">
-                                        <button type="button" class="emoji-picker-item" data-emoji="💍" aria-label="Emoji cincin">💍</button>
-                                        <button type="button" class="emoji-picker-item" data-emoji="💐" aria-label="Emoji bunga">💐</button>
-                                        <button type="button" class="emoji-picker-item" data-emoji="🤍" aria-label="Emoji hati putih">🤍</button>
-                                        <button type="button" class="emoji-picker-item" data-emoji="💖" aria-label="Emoji hati berkilau">💖</button>
-                                        <button type="button" class="emoji-picker-item" data-emoji="💝" aria-label="Emoji hadiah">💝</button>
-                                        <button type="button" class="emoji-picker-item" data-emoji="💌" aria-label="Emoji surat cinta">💌</button>
-                                    </div>
-                                </div>
-                                <div class="emoji-picker-group">
-                                    <div class="emoji-picker-title">Perayaan</div>
-                                    <div class="emoji-picker-grid">
-                                        <button type="button" class="emoji-picker-item" data-emoji="✨" aria-label="Emoji kilau">✨</button>
-                                        <button type="button" class="emoji-picker-item" data-emoji="🎉" aria-label="Emoji pesta">🎉</button>
-                                        <button type="button" class="emoji-picker-item" data-emoji="🎊" aria-label="Emoji konfeti">🎊</button>
-                                        <button type="button" class="emoji-picker-item" data-emoji="🎈" aria-label="Emoji balon">🎈</button>
-                                        <button type="button" class="emoji-picker-item" data-emoji="🥂" aria-label="Emoji bersulang">🥂</button>
-                                        <button type="button" class="emoji-picker-item" data-emoji="🎁" aria-label="Emoji hadiah kotak">🎁</button>
-                                    </div>
-                                </div>
-                                <div class="emoji-picker-group">
-                                    <div class="emoji-picker-title">Nuansa</div>
-                                    <div class="emoji-picker-grid">
-                                        <button type="button" class="emoji-picker-item" data-emoji="🕊️" aria-label="Emoji merpati">🕊️</button>
-                                        <button type="button" class="emoji-picker-item" data-emoji="🌸" aria-label="Emoji bunga sakura">🌸</button>
-                                        <button type="button" class="emoji-picker-item" data-emoji="🌷" aria-label="Emoji tulip">🌷</button>
-                                        <button type="button" class="emoji-picker-item" data-emoji="🌹" aria-label="Emoji mawar">🌹</button>
-                                        <button type="button" class="emoji-picker-item" data-emoji="🌺" aria-label="Emoji hibiscus">🌺</button>
-                                        <button type="button" class="emoji-picker-item" data-emoji="🌿" aria-label="Emoji daun">🌿</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        
                         <small class="text-muted d-block mt-2">Gunakan baris kosong untuk memberi jarak antar paragraf.</small>
                     </div>
                     <div class="mb-3">
