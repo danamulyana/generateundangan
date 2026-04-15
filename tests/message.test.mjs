@@ -4,6 +4,7 @@ import {
     parseNames,
     buildInvitationLink,
     buildFinalMessage,
+    encodeWhatsAppText,
     buildWhatsAppUrl
 } from '../assets/js/message.js';
 
@@ -31,4 +32,14 @@ test('buildFinalMessage mengganti placeholder NAMA, LINK, dan PENGANTIN', () => 
 test('buildWhatsAppUrl menghasilkan URL API WhatsApp valid', () => {
     const result = buildWhatsAppUrl('Halo semuanya');
     assert.equal(result, 'https://api.whatsapp.com/send?text=Halo%20semuanya');
+});
+
+test('encodeWhatsAppText mengamankan emoji dan karakter khusus', () => {
+    const result = encodeWhatsAppText('Halo 💍 & selamat');
+    assert.equal(result, 'Halo%20%F0%9F%92%8D%20%26%20selamat');
+});
+
+test('buildWhatsAppUrl tetap meng-encode emoji untuk WhatsApp', () => {
+    const result = buildWhatsAppUrl('Undangan spesial 💐 untuk kamu');
+    assert.equal(result, 'https://api.whatsapp.com/send?text=Undangan%20spesial%20%F0%9F%92%90%20untuk%20kamu');
 });

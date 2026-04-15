@@ -1,5 +1,9 @@
 const WHATSAPP_URL = 'https://api.whatsapp.com/send?text=';
 
+export function encodeWhatsAppText(message) {
+    return encodeURIComponent(String(message || ''));
+}
+
 export function parseNames(rawNames) {
     return rawNames
         .split('\n')
@@ -25,5 +29,5 @@ export function buildFinalMessage(template, name, invitationLink, coupleProfile)
 }
 
 export function buildWhatsAppUrl(message) {
-    return `${WHATSAPP_URL}${encodeURIComponent(message)}`;
+    return `${WHATSAPP_URL}${encodeWhatsAppText(message)}`;
 }

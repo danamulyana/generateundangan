@@ -94,7 +94,8 @@
                             <select class="form-select" id="templatePreset"></select>
                             <small class="text-muted">Pilih template untuk mengisi pesan otomatis.</small>
                         </div>
-                        <textarea class="form-control" id="templateInput" rows="8">
+                        <div class="template-textarea-wrap">
+                            <textarea class="form-control" id="templateInput" rows="8">
 *Tanpa Mengurangi Rasa Hormat*
 
 Yth. *{{NAMA}}*,
@@ -105,8 +106,55 @@ Kami mengundang Anda untuk hadir di momen bahagia kami:
 Klik tautan di bawah untuk melihat detail acara dan RSVP:
 {{LINK}}
 
-Terima kasih.
-                        </textarea>
+Terma kasih.
+                            </textarea>
+                            <div class="emoji-inline-suggestion" id="emojiSuggestion" hidden>
+                                <div class="emoji-suggestion-list" id="emojiSuggestionList"></div>
+                            </div>
+                        </div>
+                        <div class="template-textarea-controls d-flex gap-2 align-items-center mt-2">
+                            <div class="emoji-picker-wrap">
+                                <button type="button" class="btn btn-sm btn-light emoji-picker-toggle" id="emojiPickerToggle" aria-expanded="false" aria-controls="emojiPickerPanel">
+                                    <i class="bi bi-emoji-smile me-1"></i>Emoji
+                                </button>
+                                <div class="emoji-picker-panel" id="emojiPickerPanel" hidden>
+                                    <div class="emoji-picker-group">
+                                        <div class="emoji-picker-title">Romantis</div>
+                                        <div class="emoji-picker-grid">
+                                            <button type="button" class="emoji-picker-item" data-emoji="💍" aria-label="Emoji cincin">💍</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="💐" aria-label="Emoji bunga">💐</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🤍" aria-label="Emoji hati putih">🤍</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="💖" aria-label="Emoji hati berkilau">💖</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="💝" aria-label="Emoji hadiah">💝</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="💌" aria-label="Emoji surat cinta">💌</button>
+                                        </div>
+                                    </div>
+                                    <div class="emoji-picker-group">
+                                        <div class="emoji-picker-title">Perayaan</div>
+                                        <div class="emoji-picker-grid">
+                                            <button type="button" class="emoji-picker-item" data-emoji="✨" aria-label="Emoji kilau">✨</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🎉" aria-label="Emoji pesta">🎉</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🎊" aria-label="Emoji konfeti">🎊</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🎈" aria-label="Emoji balon">🎈</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🥂" aria-label="Emoji bersulang">🥂</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🎁" aria-label="Emoji hadiah kotak">🎁</button>
+                                        </div>
+                                    </div>
+                                    <div class="emoji-picker-group">
+                                        <div class="emoji-picker-title">Nuansa</div>
+                                        <div class="emoji-picker-grid">
+                                            <button type="button" class="emoji-picker-item" data-emoji="🕊️" aria-label="Emoji merpati">🕊️</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🌸" aria-label="Emoji bunga sakura">🌸</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🌷" aria-label="Emoji tulip">🌷</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🌹" aria-label="Emoji mawar">🌹</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🌺" aria-label="Emoji hibiscus">🌺</button>
+                                            <button type="button" class="emoji-picker-item" data-emoji="🌿" aria-label="Emoji daun">🌿</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <small class="text-muted" style="font-size: 0.75rem;">Tip: ketik <code>:nama</code> di pesan untuk saran emoji cepat</small>
+                        </div>
                         <div class="template-adjust-tools mt-2">
                             <button type="button" class="btn btn-sm btn-light" id="templateSizeDown">
                                 <i class="bi bi-dash-lg me-1"></i>Lebih Ringkas
@@ -145,6 +193,46 @@ Terima kasih.
                             <button type="button" class="btn btn-sm btn-light formatSnippetBtn" data-snippet="`teks monospace`">
                                 <i class="bi bi-code-slash me-1"></i>Tambah Monospace
                             </button>
+                        </div>
+                        <div class="emoji-picker-wrap mt-2">
+                            <button type="button" class="btn btn-sm btn-light emoji-picker-toggle" id="emojiPickerToggle" aria-expanded="false" aria-controls="emojiPickerPanel">
+                                <i class="bi bi-emoji-smile me-1"></i>Pilih Emoji
+                            </button>
+                            <div class="emoji-picker-panel" id="emojiPickerPanel" hidden>
+                                <div class="emoji-picker-group">
+                                    <div class="emoji-picker-title">Romantis</div>
+                                    <div class="emoji-picker-grid">
+                                        <button type="button" class="emoji-picker-item" data-emoji="💍" aria-label="Emoji cincin">💍</button>
+                                        <button type="button" class="emoji-picker-item" data-emoji="💐" aria-label="Emoji bunga">💐</button>
+                                        <button type="button" class="emoji-picker-item" data-emoji="🤍" aria-label="Emoji hati putih">🤍</button>
+                                        <button type="button" class="emoji-picker-item" data-emoji="💖" aria-label="Emoji hati berkilau">💖</button>
+                                        <button type="button" class="emoji-picker-item" data-emoji="💝" aria-label="Emoji hadiah">💝</button>
+                                        <button type="button" class="emoji-picker-item" data-emoji="💌" aria-label="Emoji surat cinta">💌</button>
+                                    </div>
+                                </div>
+                                <div class="emoji-picker-group">
+                                    <div class="emoji-picker-title">Perayaan</div>
+                                    <div class="emoji-picker-grid">
+                                        <button type="button" class="emoji-picker-item" data-emoji="✨" aria-label="Emoji kilau">✨</button>
+                                        <button type="button" class="emoji-picker-item" data-emoji="🎉" aria-label="Emoji pesta">🎉</button>
+                                        <button type="button" class="emoji-picker-item" data-emoji="🎊" aria-label="Emoji konfeti">🎊</button>
+                                        <button type="button" class="emoji-picker-item" data-emoji="🎈" aria-label="Emoji balon">🎈</button>
+                                        <button type="button" class="emoji-picker-item" data-emoji="🥂" aria-label="Emoji bersulang">🥂</button>
+                                        <button type="button" class="emoji-picker-item" data-emoji="🎁" aria-label="Emoji hadiah kotak">🎁</button>
+                                    </div>
+                                </div>
+                                <div class="emoji-picker-group">
+                                    <div class="emoji-picker-title">Nuansa</div>
+                                    <div class="emoji-picker-grid">
+                                        <button type="button" class="emoji-picker-item" data-emoji="🕊️" aria-label="Emoji merpati">🕊️</button>
+                                        <button type="button" class="emoji-picker-item" data-emoji="🌸" aria-label="Emoji bunga sakura">🌸</button>
+                                        <button type="button" class="emoji-picker-item" data-emoji="🌷" aria-label="Emoji tulip">🌷</button>
+                                        <button type="button" class="emoji-picker-item" data-emoji="🌹" aria-label="Emoji mawar">🌹</button>
+                                        <button type="button" class="emoji-picker-item" data-emoji="🌺" aria-label="Emoji hibiscus">🌺</button>
+                                        <button type="button" class="emoji-picker-item" data-emoji="🌿" aria-label="Emoji daun">🌿</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <small class="text-muted d-block mt-2">Gunakan baris kosong untuk memberi jarak antar paragraf.</small>
                     </div>

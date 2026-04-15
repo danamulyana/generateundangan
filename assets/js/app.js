@@ -38,9 +38,48 @@ $(document).ready(async function () {
     const MAX_TEMPLATE_ROWS = 30;
     const TEMPLATE_ROW_STEP = 2;
 
+    const EMOJI_SHORTHAND = {
+        ring: '💍',
+        cincin: '💍',
+        flower: '💐',
+        bunga: '💐',
+        white_heart: '🤍',
+        hati_putih: '🤍',
+        heart: '💖',
+        hati: '💖',
+        gift: '💝',
+        hadiah: '💝',
+        letter: '💌',
+        surat: '💌',
+        sparkle: '✨',
+        kilau: '✨',
+        party: '🎉',
+        pesta: '🎉',
+        confetti: '🎊',
+        konfeti: '🎊',
+        balloon: '🎈',
+        balon: '🎈',
+        toast: '🥂',
+        bersulang: '🥂',
+        box: '🎁',
+        kotak: '🎁',
+        dove: '🕊️',
+        merpati: '🕊️',
+        cherry: '🌸',
+        sakura: '🌸',
+        tulip: '🌷',
+        rose: '🌹',
+        mawar: '🌹',
+        hibiscus: '🌺',
+        leaf: '🌿',
+        daun: '🌿'
+    };
+
     const table = createLinkTable($('#linkTable'));
     let appState = getDefaultAppState();
     let activeUsageTour = null;
+    let templateSelection = { start: 0, end: 0 };
+    let emojiSuggestionState = { start: -1, end: -1, prefix: '' };
 
     function getCoupleProfileFromInputs() {
         return normalizeCoupleProfile({
@@ -85,6 +124,189 @@ $(document).ready(async function () {
         renderInvitationRows(table, appState.invitations);
         $('#selectAllRows').prop('checked', false);
         await persistAppStateWithWarning(message);
+    }
+
+    function rememberTemplateSelection() {
+        const textarea = $('#templateInput').get(0);
+        if (!textarea) {
+            return;
+        }
+
+        templateSelection = {
+            start: typeof textarea.selectionStart === 'number' ? textarea.selectionStart : templateSelection.start,
+            end: typeof textarea.selectionEnd === 'number' ? textarea.selectionEnd : templateSelection.end
+        };
+    }
+
+    function insertTemplateText(snippet) {
+        const textarea = $('#templateInput').get(0);
+        if (!textarea) {
+            return;
+        }
+
+        textarea.focus();
+
+        const currentValue = textarea.value;
+        const start = Number.isFinite(templateSelection.start) ? templateSelection.start : currentValue.length;
+        const end = Number.isFinite(templateSelection.end) ? templateSelection.end : currentValue.length;
+        const insertion = start > 0 && !currentValue.endsWith('\n') ? `\n${snippet}` : snippet;
+        const nextValue = currentValue.slice(0, start) + insertion + currentValue.slice(end);
+
+        textarea.value = nextValue;
+        saveTemplate(nextValue);
+        syncPresetFromCurrentTemplate();
+
+        const cursorPosition = start + insertion.length;
+        templateSelection = { start: cursorPosition, end: cursorPosition };
+        textarea.setSelectionRange(cursorPosition, cursorPosition);
+    }
+
+    function openEmojiPicker() {
+        const panel = $('#emojiPickerPanel');
+        const toggle = $('#emojiPickerToggle');
+
+        panel.prop('hidden', false).addClass('is-open');
+        toggle.attr('aria-expanded', 'true');
+    }
+
+    function closeEmojiPicker() {
+        const panel = $('#emojiPickerPanel');
+        const toggle = $('#emojiPickerToggle');
+
+        panel.removeClass('is-open').prop('hidden', true);
+        toggle.attr('aria-expanded', 'false');
+    }
+
+    function toggleEmojiPicker() {
+        const panel = $('#emojiPickerPanel');
+
+        if (panel.is('[hidden]')) {
+            openEmojiPicker();
+            return;
+        }
+
+        closeEmojiPicker();
+    }
+
+    function closeEmojiInlineSuggestion() {
+        const suggestion = $('#emojiSuggestion');
+        suggestion.prop('hidden', true);
+        emojiSuggestionState = { start: -1, end: -1, prefix: '' };
+    }
+
+    function getEmojiSuggestionsForPrefix(prefix) {
+        if (!prefix || prefix.length === 0) {
+            return [];
+        }
+
+        const lowerPrefix = prefix.toLowerCase();
+        const matches = Object.entries(EMOJI_SHORTHAND)
+            .filter(([name]) => name.startsWith(lowerPrefix))
+            .map(([name, emoji]) => ({ name, emoji }));
+
+        return matches.slice(0, 8);
+    }
+
+    function renderEmojiInlineSuggestions(suggestions, cursorOffset) {
+        const suggestion = $('#emojiSuggestion');
+        const suggestionList = $('#emojiSuggestionList');
+
+        if (!suggestions || suggestions.length === 0) {
+            closeEmojiInlineSuggestion();
+            return;
+        }
+
+        suggestionList.empty();
+
+        suggestions.forEach((item) => {
+            const btn = $('<button>')
+                .addClass('emoji-suggestion-item')
+                .attr('type', 'button')
+                .attr('data-emoji', item.emoji)
+                .attr('data-name', item.name)
+                .html(`<span>${item.emoji}</span>${item.name}`)
+                .on('click', function (event) {
+                    event.preventDefault();
+                    applyEmojiInlineSuggestion(item.emoji);
+                });
+
+            suggestionList.append(btn);
+        });
+
+        suggestion.prop('hidden', false);
+    }
+
+    function applyEmojiInlineSuggestion(emoji) {
+        const textarea = $('#templateInput').get(0);
+        if (!textarea || emojiSuggestionState.start < 0) {
+            return;
+        }
+
+        const currentValue = textarea.value;
+        const lineStart = currentValue.lastIndexOf('\n', emojiSuggestionState.start) + 1;
+        const beforePrefix = currentValue.slice(0, lineStart);
+        const afterSuggestion = currentValue.slice(emojiSuggestionState.end);
+
+        const nextValue = beforePrefix + emoji + afterSuggestion;
+        textarea.value = nextValue;
+
+        saveTemplate(nextValue);
+        syncPresetFromCurrentTemplate();
+
+        const cursorPosition = lineStart + emoji.length;
+        templateSelection = { start: cursorPosition, end: cursorPosition };
+        textarea.setSelectionRange(cursorPosition, cursorPosition);
+        textarea.focus();
+
+        closeEmojiInlineSuggestion();
+    }
+
+    function handleTemplateInput() {
+        const textarea = $('#templateInput').get(0);
+        if (!textarea) {
+            closeEmojiInlineSuggestion();
+            return;
+        }
+
+        const currentValue = textarea.value;
+        const cursor = textarea.selectionStart;
+
+        const beforeCursor = currentValue.slice(0, cursor);
+        const colonIndex = beforeCursor.lastIndexOf(':');
+
+        if (colonIndex === -1) {
+            closeEmojiInlineSuggestion();
+            return;
+        }
+
+        const lastNewline = beforeCursor.lastIndexOf('\n');
+        const lastSpace = beforeCursor.lastIndexOf(' ');
+        const lastBoundary = Math.max(lastNewline, lastSpace);
+
+        if (colonIndex <= lastBoundary) {
+            closeEmojiInlineSuggestion();
+            return;
+        }
+
+        const prefix = beforeCursor.slice(colonIndex + 1);
+
+        if (prefix.match(/[^a-z0-9_]/i)) {
+            closeEmojiInlineSuggestion();
+            return;
+        }
+
+        const suggestions = getEmojiSuggestionsForPrefix(prefix);
+
+        if (suggestions.length > 0) {
+            emojiSuggestionState = {
+                start: colonIndex,
+                end: cursor,
+                prefix: prefix
+            };
+            renderEmojiInlineSuggestions(suggestions);
+        } else {
+            closeEmojiInlineSuggestion();
+        }
     }
 
     async function removeInvitationsByIds(ids) {
@@ -177,7 +399,7 @@ $(document).ready(async function () {
             {
                 target: '#templateInput',
                 title: '5. Edit Template',
-                content: 'Sesuaikan isi pesan. Anda juga bisa pakai format cepat untuk bold, italic, coret, dan monospace.',
+                content: 'Sesuaikan isi pesan. Anda juga bisa pakai format cepat untuk bold, italic, coret, monospace, dan picker emoji ringkas.',
                 ...mobileStepOptions
             },
             {
@@ -598,27 +820,46 @@ $(document).ready(async function () {
         Swal.fire('Berhasil!', `${names.length} Undangan siap dikirim.`, 'success');
     });
 
-    $('.formatSnippetBtn').on('click', function () {
-        const snippet = $(this).data('snippet');
-        const textarea = $('#templateInput').get(0);
-        const currentValue = textarea.value;
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
+    $('#templateInput').on('select keyup mouseup click input', function () {
+        rememberTemplateSelection();
+    });
 
-        const insertion = start > 0 && !currentValue.endsWith('\n') ? `\n${snippet}` : snippet;
-        const nextValue = currentValue.slice(0, start) + insertion + currentValue.slice(end);
+    $(document).on('click', '.formatSnippetBtn, .emoji-picker-item', function () {
+        const snippet = $(this).data('snippet') || $(this).data('emoji');
 
-        textarea.value = nextValue;
-        saveTemplate(nextValue);
-        syncPresetFromCurrentTemplate();
-        const cursorPosition = start + insertion.length;
-        textarea.focus();
-        textarea.setSelectionRange(cursorPosition, cursorPosition);
+        if (!snippet) {
+            return;
+        }
+
+        insertTemplateText(snippet);
+        closeEmojiPicker();
+    });
+
+    $('#emojiPickerToggle').on('click', function (event) {
+        event.stopPropagation();
+        toggleEmojiPicker();
+    });
+
+    $('#emojiSuggestion, #emojiSuggestionList').on('click', function (event) {
+        event.stopPropagation();
+    });
+
+    $(document).on('click', function () {
+        closeEmojiPicker();
+        closeEmojiInlineSuggestion();
+    });
+
+    $(document).on('keydown', function (event) {
+        if (event.key === 'Escape') {
+            closeEmojiPicker();
+            closeEmojiInlineSuggestion();
+        }
     });
 
     $('#templateInput').on('input', function () {
         saveTemplate($(this).val());
         syncPresetFromCurrentTemplate();
+        handleTemplateInput();
     });
 
     $('#brideNameInput, #groomNameInput').on('input', async function () {
