@@ -1,5 +1,5 @@
 export const DEFAULT_BASE_INVITATION_URL = 'https://<groomname>-<brideName>.ruangnada.my.id/?dear=';
-export const GA_MEASUREMENT_ID = 'DMMFB3VJDK';
+export const GA_MEASUREMENT_ID = 'G-DMMFB3VJDK';
 export const DEFAULT_COUPLE_PROFILE = {
     brideName: '',
     groomName: ''
